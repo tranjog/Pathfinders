@@ -422,6 +422,128 @@
   to { transform: rotate(360deg); }
 }
 
+/* Location search */
+.location-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.location-search-icon {
+  position: absolute;
+  left: 8px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.location-search input {
+  width: 240px;
+  padding: 6px 30px 6px 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.location-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.location-search input:focus {
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.location-search-locate {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.location-search-locate:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Pac (Places Autocomplete dropdown) — match dark theme */
+.pac-container {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-family: inherit;
+  margin-top: 2px;
+}
+
+.pac-item {
+  padding: 6px 10px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pac-item:first-child {
+  border-top: none;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pac-item-query {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.pac-matched {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.pac-icon {
+  filter: invert(0.7);
+}
+
+/* OSM attribution overlay */
+.osm-attribution {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #333;
+  font-size: 11px;
+  border-radius: 3px;
+  pointer-events: auto;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.osm-attribution a {
+  color: #0078d7;
+  text-decoration: none;
+}
+
+.osm-attribution a:hover {
+  text-decoration: underline;
+}
+
 /* Modal */
 .modal-backdrop {
   position: fixed;

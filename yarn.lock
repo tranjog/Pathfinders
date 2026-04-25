@@ -293,7 +293,7 @@
   resolved "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-rc.7.tgz"
   integrity sha512-qujRfC8sFVInYSPPMLQByRh7zhwkGFS4+tyMQ83srV1qrxL4g8E2tyxVVyxd0+8QeBM1mIk9KbWxkegRr76XzA==
 
-"@tauri-apps/api@^2.10.1":
+"@tauri-apps/api@^2.10.1", "@tauri-apps/api@^2.8.0":
   version "2.10.1"
   resolved "https://registry.npmjs.org/@tauri-apps/api/-/api-2.10.1.tgz"
   integrity sha512-hKL/jWf293UDSUN09rR69hrToyIXBb8CjGaWC7gfinvnQrBVvnLr08FeFi38gxtugAVyVcTa5/FD/Xnkb1siBw==
@@ -319,6 +319,13 @@
     "@tauri-apps/cli-win32-arm64-msvc" "2.10.1"
     "@tauri-apps/cli-win32-ia32-msvc" "2.10.1"
     "@tauri-apps/cli-win32-x64-msvc" "2.10.1"
+
+"@tauri-apps/plugin-geolocation@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@tauri-apps/plugin-geolocation/-/plugin-geolocation-2.3.2.tgz"
+  integrity sha512-ONCwav1monafjeO8/JdXtRlbhZ3xgAdBYxo/62qgw99u9+y6xGsohy3avZgFZsBHA0JVNe1uJnMi+vfT5ZSFUA==
+  dependencies:
+    "@tauri-apps/api" "^2.8.0"
 
 "@types/babel__core@^7.20.5":
   version "7.20.5"

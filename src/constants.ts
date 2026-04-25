@@ -1,4 +1,4 @@
-export const DEFAULT_CENTER = { lat: 41.4731, lng: 2.0864 }; // Sant Cugat del Vallès
+export const DEFAULT_CENTER = { lat: 51.5074, lng: -0.1278 }; // London, UK
 export const DEFAULT_ZOOM = 14;
 export const SV_SAMPLE_INTERVAL_METERS = 50;
 export const SV_SEARCH_RADIUS = 50;

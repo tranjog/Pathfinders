@@ -10,6 +10,7 @@ import RoutePlanner from './components/RoutePlanner';
 import StreetViewPanel from './components/StreetViewPanel';
 import RideControls from './components/RideControls';
 import ApiKeyDialog from './components/ApiKeyDialog';
+import LocationSearch, { type SearchTarget } from './components/LocationSearch';
 import { useOverpassCycleways } from './hooks/useOverpassCycleways';
 import { useStreetViewCoverage } from './hooks/useStreetViewCoverage';
 import { useCyclingDirections } from './hooks/useCyclingDirections';
@@ -94,6 +95,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const [streetViewPosition, setStreetViewPosition] = useState<LatLng | null>(null);
   const [streetViewHeading, setStreetViewHeading] = useState(0);
   const [checkedSegments, setCheckedSegments] = useState<Map<number, CyclewaySegment>>(new Map());
+  const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
 
   const config = ACTIVITY_CONFIGS[activity];
 
@@ -125,7 +127,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
   const { routes, selectedIndex, route, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useCyclingDirections(config.travelModeKey);
   const { riderState, play, pause, next, prev, reset, setSpeed } = useStreetViewRider();
-  const { userLocation } = useUserLocation();
+  const { userLocation, requestLocation } = useUserLocation();
 
   // Reset stale state when activity changes
   useEffect(() => {
@@ -198,6 +200,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       <header className="app-header">
         <h1>{config.appTitle}</h1>
         <div className="header-toggles">
+          <LocationSearch onSelect={setSearchTarget} userLocation={userLocation} onRequestLocation={requestLocation} />
           <ActivityToggle activity={activity} onChange={setActivity} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
@@ -217,7 +220,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       </header>
       <main className="app-main" ref={mainRef}>
         <div className="map-container" style={{ flex: 1, minWidth: 300 }}>
-          <MapView userLocation={userLocation}>
+          <MapView userLocation={userLocation} searchTarget={searchTarget}>
             {isBrowse && (
               <CoverageOverlay
                 segments={segments}

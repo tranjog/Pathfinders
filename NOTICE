@@ -4,3 +4,15 @@ Copyright 2026 Joachim Tranvåg
 This product includes software developed by Joachim Tranvåg.
 
 Licensed under the Apache License, Version 2.0.
+
+---
+
+This product uses cycleway and footway data from OpenStreetMap,
+queried via the Overpass API.
+
+  Map data © OpenStreetMap contributors
+  https://www.openstreetmap.org/copyright
+
+OpenStreetMap data is licensed under the Open Database License (ODbL):
+  https://opendatacommons.org/licenses/odbl/
+
