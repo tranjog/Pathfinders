@@ -64,4 +64,4 @@ npm run tauri:build  # desktop installers in src-tauri/target/release/bundle
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+Apache License 2.0 — see [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
