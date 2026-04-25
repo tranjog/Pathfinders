@@ -11,16 +11,19 @@ import StreetViewPanel from './components/StreetViewPanel';
 import RideControls from './components/RideControls';
 import ApiKeyDialog from './components/ApiKeyDialog';
 import LocationSearch, { type SearchTarget } from './components/LocationSearch';
+import { SettingsIcon } from './assets';
 import { useOverpassCycleways } from './hooks/useOverpassCycleways';
 import { useStreetViewCoverage } from './hooks/useStreetViewCoverage';
 import { useCyclingDirections } from './hooks/useCyclingDirections';
 import { useStreetViewRider } from './hooks/useStreetViewRider';
 import { useUserLocation } from './hooks/useUserLocation';
 import { useApiKey } from './hooks/useApiKey';
-import { computeHeading, samplePointsAlongPath } from './services/geometry';
+import { useMapSession } from './hooks/useMapSession';
+import { markEnvKeyDenied } from './services/apiKey';
+import { samplePointsAlongPath } from './services/geometry';
 import { SV_SAMPLE_INTERVAL_METERS } from './constants';
 import { ACTIVITY_CONFIGS } from './config/activityConfig';
-import type { AppMode, ActivityType, CyclewaySegment, LatLng } from './types';
+import type { AppMode, ActivityType, LatLng } from './types';
 import './App.css';
 
 declare global {
@@ -28,20 +31,23 @@ declare global {
 }
 
 export default function App() {
-  const { key, source, saveKey, clearKey } = useApiKey();
+  const { key, source, saveKey, clearKey, refresh } = useApiKey();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     window.gm_authFailure = () => {
       setAuthError('Google rejected the key. Check restrictions and that required APIs are enabled.');
-      if (source === 'user') {
-        clearKey();
-        setSettingsOpen(true);
-      }
+      // If the bad key came from .env, ignore it for the rest of the session so
+      // the user can paste a working one. Always wipe any stored key so the
+      // dialog reopens cleanly.
+      if (source === 'env') markEnvKeyDenied();
+      clearKey();
+      refresh();
+      setSettingsOpen(true);
     };
     return () => { delete window.gm_authFailure; };
-  }, [source, clearKey]);
+  }, [source, clearKey, refresh]);
 
   const handleSave = (newKey: string) => {
     setAuthError(null);
@@ -91,10 +97,6 @@ type AppContentProps = {
 function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const [activity, setActivity] = useState<ActivityType>('cycling');
   const [mode, setMode] = useState<AppMode>('browse');
-  const [selectedSegment, setSelectedSegment] = useState<CyclewaySegment | null>(null);
-  const [streetViewPosition, setStreetViewPosition] = useState<LatLng | null>(null);
-  const [streetViewHeading, setStreetViewHeading] = useState(0);
-  const [checkedSegments, setCheckedSegments] = useState<Map<number, CyclewaySegment>>(new Map());
   const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
 
   const config = ACTIVITY_CONFIGS[activity];
@@ -126,67 +128,33 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassCycleways(isBrowse, activity);
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
   const { routes, selectedIndex, route, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useCyclingDirections(config.travelModeKey);
-  const { riderState, play, pause, next, prev, reset, setSpeed } = useStreetViewRider();
+  const { riderState, play, pause, next, prev, reset: resetRider, setSpeed } = useStreetViewRider();
   const { userLocation, requestLocation } = useUserLocation();
+  const {
+    segments,
+    selectedSegment,
+    streetViewPosition,
+    streetViewHeading,
+    handleSegmentClick,
+    reset: resetMapSession,
+  } = useMapSession(rawSegments, checkSegmentCoverage);
 
-  // Reset stale state when activity changes
-  useEffect(() => {
-    setSelectedSegment(null);
-    setStreetViewPosition(null);
-    setStreetViewHeading(0);
-    setCheckedSegments(new Map());
+  const handleActivityChange = useCallback((next: ActivityType) => {
+    setActivity(next);
+    resetMapSession();
     clearRoute();
-    reset([], false);
-  }, [activity, clearRoute, reset]);
+    resetRider([], false);
+  }, [resetMapSession, clearRoute, resetRider]);
 
-  // Merge coverage data into segments
-  const segments = rawSegments.map(s => checkedSegments.get(s.id) ?? s);
-
-  // Sync rider position to Street View panel
-  useEffect(() => {
-    if (riderState.points.length > 0) {
-      setStreetViewPosition(riderState.points[riderState.currentIndex]);
-      setStreetViewHeading(riderState.heading);
-    }
-  }, [riderState.currentIndex, riderState.heading, riderState.points]);
-
-  const handleSegmentClick = useCallback(
-    async (segment: CyclewaySegment, latLng: google.maps.LatLng) => {
-      const position = { lat: latLng.lat(), lng: latLng.lng() };
-      setStreetViewPosition(position);
-      setSelectedSegment(segment);
-
-      const pts = segment.points;
-      if (pts.length >= 2) {
-        let minDist = Infinity;
-        let idx = 0;
-        for (let i = 0; i < pts.length; i++) {
-          const d = Math.abs(pts[i].lat - position.lat) + Math.abs(pts[i].lng - position.lng);
-          if (d < minDist) { minDist = d; idx = i; }
-        }
-        const nextIdx = Math.min(idx + 1, pts.length - 1);
-        if (idx !== nextIdx) {
-          setStreetViewHeading(computeHeading(pts[idx], pts[nextIdx]));
-        }
-      }
-
-      if (!segment.coverageChecked) {
-        const result = await checkSegmentCoverage(segment);
-        setCheckedSegments(prev => {
-          const updated = new Map(prev);
-          updated.set(segment.id, result.segment);
-          return updated;
-        });
-        setSelectedSegment(result.segment);
-      }
-    },
-    [checkSegmentCoverage]
-  );
+  // Rider position takes precedence over manual selection while riding
+  const isRiding = riderState.points.length > 0;
+  const effectivePosition = isRiding ? riderState.points[riderState.currentIndex] : streetViewPosition;
+  const effectiveHeading = isRiding ? riderState.heading : streetViewHeading;
 
   const handleStartRide = useCallback((points: LatLng[]) => {
     const sampled = samplePointsAlongPath(points, SV_SAMPLE_INTERVAL_METERS);
-    reset(sampled, true);
-  }, [reset]);
+    resetRider(sampled, true);
+  }, [resetRider]);
 
   const handleRouteReady = useCallback(
     (origin: LatLng, destination: LatLng) => {
@@ -201,7 +169,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
         <h1>{config.appTitle}</h1>
         <div className="header-toggles">
           <LocationSearch onSelect={setSearchTarget} userLocation={userLocation} onRequestLocation={requestLocation} />
-          <ActivityToggle activity={activity} onChange={setActivity} />
+          <ActivityToggle activity={activity} onChange={handleActivityChange} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
             <button
@@ -210,10 +178,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
               aria-label="API key settings"
               onClick={onOpenSettings}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
+              <SettingsIcon />
             </button>
           )}
         </div>
@@ -255,14 +220,14 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 config={config}
               />
               <StreetViewPanel
-                position={streetViewPosition}
-                heading={streetViewHeading}
-                isRiding={riderState.points.length > 0}
+                position={effectivePosition}
+                heading={effectiveHeading}
+                isRiding={isRiding}
                 isPlaying={riderState.isPlaying}
                 onPlay={play}
                 onPause={pause}
               />
-              {riderState.points.length > 0 && (
+              {isRiding && (
                 <RideControls
                   riderState={riderState}
                   onPlay={play}
@@ -313,14 +278,14 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 </div>
               )}
               <StreetViewPanel
-                position={streetViewPosition}
-                heading={streetViewHeading}
-                isRiding={riderState.points.length > 0}
+                position={effectivePosition}
+                heading={effectiveHeading}
+                isRiding={isRiding}
                 isPlaying={riderState.isPlaying}
                 onPlay={play}
                 onPause={pause}
               />
-              {riderState.points.length > 0 && (
+              {isRiding && (
                 <RideControls
                   riderState={riderState}
                   onPlay={play}

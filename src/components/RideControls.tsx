@@ -36,7 +36,7 @@ export default function RideControls({
         &#9664;&#9664;
       </button>
       <button onClick={isPlaying ? onPause : onPlay}>
-        {isPlaying ? '&#10074;&#10074;' : '&#9654;'}
+        {isPlaying ? '❚❚' : '▶'}
       </button>
       <button onClick={onNext} disabled={currentIndex >= total - 1}>
         &#9654;&#9654;

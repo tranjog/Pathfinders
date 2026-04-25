@@ -1,6 +1,9 @@
+#[cfg(target_os = "macos")]
+mod macos_location;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  tauri::Builder::default()
+  let builder = tauri::Builder::default()
     .plugin(tauri_plugin_geolocation::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
@@ -11,7 +14,12 @@ pub fn run() {
         )?;
       }
       Ok(())
-    })
+    });
+
+  #[cfg(target_os = "macos")]
+  let builder = builder.invoke_handler(tauri::generate_handler![macos_location::get_macos_location]);
+
+  builder
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

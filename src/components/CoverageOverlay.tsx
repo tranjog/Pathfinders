@@ -93,19 +93,22 @@ export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOv
 
   // Cleanup on unmount
   useEffect(() => {
+    const polylines = polylinesRef.current;
+    const halos = halosRef.current;
+    const listeners = listenersRef.current;
     return () => {
-      for (const polyline of polylinesRef.current.values()) {
+      for (const polyline of polylines.values()) {
         polyline.setMap(null);
       }
-      for (const halo of halosRef.current.values()) {
+      for (const halo of halos.values()) {
         halo.setMap(null);
       }
-      for (const listener of listenersRef.current.values()) {
+      for (const listener of listeners.values()) {
         google.maps.event.removeListener(listener);
       }
-      polylinesRef.current.clear();
-      halosRef.current.clear();
-      listenersRef.current.clear();
+      polylines.clear();
+      halos.clear();
+      listeners.clear();
     };
   }, []);
 

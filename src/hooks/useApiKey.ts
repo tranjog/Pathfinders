@@ -14,5 +14,9 @@ export function useApiKey() {
     setState(resolveApiKey());
   }, []);
 
-  return { key: state.key, source: state.source, saveKey, clearKey };
+  const refresh = useCallback(() => {
+    setState(resolveApiKey());
+  }, []);
+
+  return { key: state.key, source: state.source, saveKey, clearKey, refresh };
 }

@@ -1,11 +1,21 @@
 const STORAGE_KEY = 'pathfinders.gmaps_api_key';
+const ENV_DENIED_FLAG = 'pathfinders.env_key_denied';
 
 export type KeySource = 'env' | 'user' | null;
 
 const envKey = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined)?.trim();
 
+function isEnvKeyDenied(): boolean {
+  try { return sessionStorage.getItem(ENV_DENIED_FLAG) === '1'; } catch { return false; }
+}
+
+export function markEnvKeyDenied(): void {
+  try { sessionStorage.setItem(ENV_DENIED_FLAG, '1'); } catch { /* ignore */ }
+}
+
 export function getEnvKey(): string | null {
   if (!envKey || envKey === 'your_api_key_here') return null;
+  if (isEnvKeyDenied()) return null;
   return envKey;
 }
 
