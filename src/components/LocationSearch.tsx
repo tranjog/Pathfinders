@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '../types';
+import { SearchIcon, LocateIcon } from '../assets';
 
 export type SearchTarget = {
   center: LatLng;
@@ -60,20 +61,7 @@ export default function LocationSearch({ onSelect, userLocation, onRequestLocati
 
   return (
     <div className="location-search">
-      <svg
-        className="location-search-icon"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
+      <SearchIcon className="location-search-icon" />
       <input
         ref={inputRef}
         type="text"
@@ -88,13 +76,7 @@ export default function LocationSearch({ onSelect, userLocation, onRequestLocati
         onClick={handleLocate}
         disabled={locating}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="4" />
-          <line x1="12" y1="2" x2="12" y2="6" />
-          <line x1="12" y1="18" x2="12" y2="22" />
-          <line x1="2" y1="12" x2="6" y2="12" />
-          <line x1="18" y1="12" x2="22" y2="12" />
-        </svg>
+        <LocateIcon width={14} height={14} />
       </button>
       {showError && (
         <LocationErrorModal onClose={() => setShowError(false)} onRetry={handleLocate} />
