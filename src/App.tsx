@@ -17,6 +17,7 @@ import { useCyclingDirections } from './hooks/useCyclingDirections';
 import { useStreetViewRider } from './hooks/useStreetViewRider';
 import { useUserLocation } from './hooks/useUserLocation';
 import { useApiKey } from './hooks/useApiKey';
+import { markEnvKeyDenied } from './services/apiKey';
 import { computeHeading, samplePointsAlongPath } from './services/geometry';
 import { SV_SAMPLE_INTERVAL_METERS } from './constants';
 import { ACTIVITY_CONFIGS } from './config/activityConfig';
@@ -28,20 +29,23 @@ declare global {
 }
 
 export default function App() {
-  const { key, source, saveKey, clearKey } = useApiKey();
+  const { key, source, saveKey, clearKey, refresh } = useApiKey();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     window.gm_authFailure = () => {
       setAuthError('Google rejected the key. Check restrictions and that required APIs are enabled.');
-      if (source === 'user') {
-        clearKey();
-        setSettingsOpen(true);
-      }
+      // If the bad key came from .env, ignore it for the rest of the session so
+      // the user can paste a working one. Always wipe any stored key so the
+      // dialog reopens cleanly.
+      if (source === 'env') markEnvKeyDenied();
+      clearKey();
+      refresh();
+      setSettingsOpen(true);
     };
     return () => { delete window.gm_authFailure; };
-  }, [source, clearKey]);
+  }, [source, clearKey, refresh]);
 
   const handleSave = (newKey: string) => {
     setAuthError(null);
