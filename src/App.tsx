@@ -1,29 +1,29 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import MapView from './components/MapView';
-import ModeToggle from './components/ModeToggle';
-import ActivityToggle from './components/ActivityToggle';
-import CoverageOverlay from './components/CoverageOverlay';
-import RouteOverlay from './components/RouteOverlay';
-import BrowseSidebar from './components/BrowseSidebar';
-import RoutePlanner from './components/RoutePlanner';
-import StreetViewPanel from './components/StreetViewPanel';
-import RideControls from './components/RideControls';
-import ApiKeyDialog from './components/ApiKeyDialog';
-import LocationSearch, { type SearchTarget } from './components/LocationSearch';
-import { SettingsIcon } from './assets';
-import { useOverpassCycleways } from './hooks/useOverpassCycleways';
-import { useStreetViewCoverage } from './hooks/useStreetViewCoverage';
-import { useCyclingDirections } from './hooks/useCyclingDirections';
-import { useStreetViewRider } from './hooks/useStreetViewRider';
-import { useUserLocation } from './hooks/useUserLocation';
-import { useApiKey } from './hooks/useApiKey';
-import { useMapSession } from './hooks/useMapSession';
-import { markEnvKeyDenied } from './services/apiKey';
-import { samplePointsAlongPath } from './services/geometry';
-import { SV_SAMPLE_INTERVAL_METERS } from './constants';
-import { ACTIVITY_CONFIGS } from './config/activityConfig';
-import type { AppMode, ActivityType, LatLng } from './types';
+import MapView from '@components/MapView';
+import ModeToggle from '@components/ModeToggle';
+import ActivityToggle from '@components/ActivityToggle';
+import CoverageOverlay from '@components/CoverageOverlay';
+import RouteOverlay from '@components/RouteOverlay';
+import BrowseSidebar from '@components/BrowseSidebar';
+import RoutePlanner from '@components/RoutePlanner';
+import StreetViewPanel from '@components/StreetViewPanel';
+import MovementControls from '@components/MovementControls';
+import ApiKeyDialog from '@components/ApiKeyDialog';
+import LocationSearch, { type SearchTarget } from '@components/LocationSearch';
+import { SettingsIcon } from '@assets';
+import { useOverpassCycleways } from '@hooks/useOverpassCycleways';
+import { useStreetViewCoverage } from '@hooks/useStreetViewCoverage';
+import { useCyclingDirections } from '@hooks/useCyclingDirections';
+import { useStreetViewMover } from '@hooks/useStreetViewMover';
+import { useUserLocation } from '@hooks/useUserLocation';
+import { useApiKey } from '@hooks/useApiKey';
+import { useMapSession } from '@hooks/useMapSession';
+import { markEnvKeyDenied } from '@services/apiKey';
+import { samplePointsAlongPath } from '@services/geometry';
+import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
+import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
+import type { AppMode, ActivityType, LatLng, CyclewaySegment } from '@types';
 import './App.css';
 
 declare global {
@@ -128,33 +128,41 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassCycleways(isBrowse, activity);
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
   const { routes, selectedIndex, route, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useCyclingDirections(config.travelModeKey);
-  const { riderState, play, pause, next, prev, reset: resetRider, setSpeed } = useStreetViewRider();
+  const { moverState, play, pause, next, prev, reset: resetMover, setSpeed } = useStreetViewMover();
   const { userLocation, requestLocation } = useUserLocation();
   const {
     segments,
     selectedSegment,
     streetViewPosition,
     streetViewHeading,
-    handleSegmentClick,
+    handleSegmentClick: handleSegmentClickRaw,
     reset: resetMapSession,
   } = useMapSession(rawSegments, checkSegmentCoverage);
+
+  const handleSegmentClick = useCallback(
+    (segment: CyclewaySegment, latLng: google.maps.LatLng) => {
+      resetMover([], false);
+      return handleSegmentClickRaw(segment, latLng);
+    },
+    [handleSegmentClickRaw, resetMover]
+  );
 
   const handleActivityChange = useCallback((next: ActivityType) => {
     setActivity(next);
     resetMapSession();
     clearRoute();
-    resetRider([], false);
-  }, [resetMapSession, clearRoute, resetRider]);
+    resetMover([], false);
+  }, [resetMapSession, clearRoute, resetMover]);
 
-  // Rider position takes precedence over manual selection while riding
-  const isRiding = riderState.points.length > 0;
-  const effectivePosition = isRiding ? riderState.points[riderState.currentIndex] : streetViewPosition;
-  const effectiveHeading = isRiding ? riderState.heading : streetViewHeading;
+  // Mover position takes precedence over manual selection while moving
+  const isMoving = moverState.points.length > 0;
+  const effectivePosition = isMoving ? moverState.points[moverState.currentIndex] : streetViewPosition;
+  const effectiveHeading = isMoving ? moverState.heading : streetViewHeading;
 
-  const handleStartRide = useCallback((points: LatLng[]) => {
+  const handleStartMovement = useCallback((points: LatLng[]) => {
     const sampled = samplePointsAlongPath(points, SV_SAMPLE_INTERVAL_METERS);
-    resetRider(sampled, true);
-  }, [resetRider]);
+    resetMover(sampled, true);
+  }, [resetMover]);
 
   const handleRouteReady = useCallback(
     (origin: LatLng, destination: LatLng) => {
@@ -216,20 +224,20 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 selectedSegment={selectedSegment}
                 checking={checking}
                 coverageProgress={progress}
-                onStartRide={handleStartRide}
+                onStartMovement={handleStartMovement}
                 config={config}
               />
               <StreetViewPanel
                 position={effectivePosition}
                 heading={effectiveHeading}
-                isRiding={isRiding}
-                isPlaying={riderState.isPlaying}
+                isMoving={isMoving}
+                isPlaying={moverState.isPlaying}
                 onPlay={play}
                 onPause={pause}
               />
-              {isRiding && (
-                <RideControls
-                  riderState={riderState}
+              {isMoving && (
+                <MovementControls
+                  moverState={moverState}
                   onPlay={play}
                   onPause={pause}
                   onNext={next}
@@ -263,7 +271,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                       >
                         <div className="route-option-label">Route {i + 1}</div>
                         <div className="route-option-info">
-                          {r.distance} &middot; {r.duration}
+                          {r.distance} · {r.duration}
                         </div>
                       </div>
                     ))}
@@ -271,7 +279,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                   <button
                     className="btn-go"
                     style={{ marginTop: 8, width: '100%' }}
-                    onClick={() => route && handleStartRide(route.polyline)}
+                    onClick={() => route && handleStartMovement(route.polyline)}
                   >
                     {config.actionVerb} this route
                   </button>
@@ -280,14 +288,14 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
               <StreetViewPanel
                 position={effectivePosition}
                 heading={effectiveHeading}
-                isRiding={isRiding}
-                isPlaying={riderState.isPlaying}
+                isMoving={isMoving}
+                isPlaying={moverState.isPlaying}
                 onPlay={play}
                 onPause={pause}
               />
-              {isRiding && (
-                <RideControls
-                  riderState={riderState}
+              {isMoving && (
+                <MovementControls
+                  moverState={moverState}
                   onPlay={play}
                   onPause={pause}
                   onNext={next}

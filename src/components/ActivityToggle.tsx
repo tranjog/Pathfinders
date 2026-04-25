@@ -1,4 +1,4 @@
-import type { ActivityType } from '../types';
+import type { ActivityType } from '@types';
 
 interface ActivityToggleProps {
   activity: ActivityType;

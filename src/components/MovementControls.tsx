@@ -1,7 +1,8 @@
-import type { RiderState } from '../types';
+import type { MoverState } from '@types';
+import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '@assets';
 
-interface RideControlsProps {
-  riderState: RiderState;
+interface MovementControlsProps {
+  moverState: MoverState;
   onPlay: () => void;
   onPause: () => void;
   onNext: () => void;
@@ -16,30 +17,30 @@ const SPEEDS = [
   { label: '4x', ms: 500 },
 ];
 
-export default function RideControls({
-  riderState,
+export default function MovementControls({
+  moverState,
   onPlay,
   onPause,
   onNext,
   onPrev,
   onSpeedChange,
-}: RideControlsProps) {
-  const { isPlaying, currentIndex, points } = riderState;
+}: MovementControlsProps) {
+  const { isPlaying, currentIndex, points } = moverState;
   const total = points.length;
   const progress = total > 1 ? currentIndex / (total - 1) : 0;
 
   if (total === 0) return null;
 
   return (
-    <div className="ride-controls">
-      <button onClick={onPrev} disabled={currentIndex === 0}>
-        &#9664;&#9664;
+    <div className="movement-controls">
+      <button onClick={onPrev} disabled={currentIndex === 0} aria-label="Previous">
+        <SkipBackIcon />
       </button>
-      <button onClick={isPlaying ? onPause : onPlay}>
-        {isPlaying ? '❚❚' : '▶'}
+      <button onClick={isPlaying ? onPause : onPlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+        {isPlaying ? <PauseIcon /> : <PlayIcon />}
       </button>
-      <button onClick={onNext} disabled={currentIndex >= total - 1}>
-        &#9654;&#9654;
+      <button onClick={onNext} disabled={currentIndex >= total - 1} aria-label="Next">
+        <SkipForwardIcon />
       </button>
       <div className="progress">
         <div

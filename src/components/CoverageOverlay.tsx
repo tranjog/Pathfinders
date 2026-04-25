@@ -1,18 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { CyclewaySegment } from '../types';
+import type { CyclewaySegment } from '@types';
+import { getSegmentColor } from '@utils/segmentColor';
 
 interface CoverageOverlayProps {
   segments: CyclewaySegment[];
   onSegmentClick?: (segment: CyclewaySegment, latLng: google.maps.LatLng) => void;
-}
-
-function getSegmentColor(segment: CyclewaySegment): string {
-  if (!segment.coverageChecked) return '#888888';
-  if (segment.coverageRatio == null) return '#888888';
-  if (segment.coverageRatio > 0.5) return '#4caf50';
-  if (segment.coverageRatio > 0) return '#ff9800';
-  return '#f44336';
 }
 
 export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOverlayProps) {

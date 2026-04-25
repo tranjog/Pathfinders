@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { clearStoredKey, resolveApiKey, setStoredKey, type KeySource } from '../services/apiKey';
+import { clearStoredKey, resolveApiKey, setStoredKey, type KeySource } from '@services/apiKey';
 
 export function useApiKey() {
   const [state, setState] = useState<{ key: string | null; source: KeySource }>(() => resolveApiKey());

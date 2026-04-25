@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import type { CyclewaySegment, LatLng } from '../types';
-import { computeHeading } from '../services/geometry';
+import type { CyclewaySegment, LatLng } from '@types';
+import { computeHeading } from '@services/geometry';
 
 type CheckCoverage = (segment: CyclewaySegment) => Promise<{ segment: CyclewaySegment }>;
 

@@ -1,5 +1,4 @@
-import type { CyclewaySegment, LatLng } from '../types';
-import type { ActivityConfig } from '../config/activityConfig';
+import type { CyclewaySegment, LatLng, ActivityConfig } from '@types';
 
 interface BrowseSidebarProps {
   loading: boolean;
@@ -9,7 +8,7 @@ interface BrowseSidebarProps {
   selectedSegment?: CyclewaySegment | null;
   checking?: boolean;
   coverageProgress?: number;
-  onStartRide?: (points: LatLng[]) => void;
+  onStartMovement?: (points: LatLng[]) => void;
   config: ActivityConfig;
 }
 
@@ -21,7 +20,7 @@ export default function BrowseSidebar({
   selectedSegment,
   checking,
   coverageProgress = 0,
-  onStartRide,
+  onStartMovement,
   config,
 }: BrowseSidebarProps) {
   if (tooZoomedOut) {
@@ -76,10 +75,10 @@ export default function BrowseSidebar({
                   {Math.round((selectedSegment.coverageRatio ?? 0) * 100)}% coverage
                 </span>
               </div>
-              {(selectedSegment.coverageRatio ?? 0) > 0 && onStartRide && (
+              {(selectedSegment.coverageRatio ?? 0) > 0 && onStartMovement && (
                 <button
-                  className="btn-ride"
-                  onClick={() => onStartRide(selectedSegment.points)}
+                  className="btn-start"
+                  onClick={() => onStartMovement(selectedSegment.points)}
                 >
                   {config.actionVerb} this path
                 </button>

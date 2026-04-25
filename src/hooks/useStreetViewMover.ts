@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { LatLng, RiderState } from '../types';
-import { computeHeading } from '../services/geometry';
-import { RIDE_INTERVAL_MS } from '../constants';
+import type { LatLng, MoverState } from '@types';
+import { computeHeading } from '@services/geometry';
+import { MOVE_INTERVAL_MS } from '@constants';
 
-interface UseStreetViewRiderReturn {
-  riderState: RiderState;
+interface UseStreetViewMoverReturn {
+  moverState: MoverState;
   play: () => void;
   pause: () => void;
   next: () => void;
@@ -14,8 +14,8 @@ interface UseStreetViewRiderReturn {
   setSpeed: (ms: number) => void;
 }
 
-export function useStreetViewRider(): UseStreetViewRiderReturn {
-  const [riderState, setRiderState] = useState<RiderState>({
+export function useStreetViewMover(): UseStreetViewMoverReturn {
+  const [moverState, setMoverState] = useState<MoverState>({
     isPlaying: false,
     currentIndex: 0,
     heading: 0,
@@ -23,9 +23,9 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
   });
 
   const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
-  const speedRef = useRef(RIDE_INTERVAL_MS);
-  const stateRef = useRef(riderState);
-  stateRef.current = riderState;
+  const speedRef = useRef(MOVE_INTERVAL_MS);
+  const stateRef = useRef(moverState);
+  stateRef.current = moverState;
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current != null) {
@@ -34,7 +34,7 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
     }
   }, []);
 
-  const advanceIndex = useCallback((state: RiderState, delta: number): RiderState => {
+  const advanceIndex = useCallback((state: MoverState, delta: number): MoverState => {
     const pts = state.points;
     if (pts.length < 2) return state;
 
@@ -52,7 +52,7 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
   const startTimer = useCallback(() => {
     clearTimer();
     intervalRef.current = setInterval(() => {
-      setRiderState(prev => {
+      setMoverState(prev => {
         const next = advanceIndex(prev, 1);
         if (!next.isPlaying) {
           clearTimer();
@@ -68,25 +68,25 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
 
     // If at end, restart
     const idx = state.currentIndex >= state.points.length - 1 ? 0 : state.currentIndex;
-    setRiderState(prev => ({ ...prev, isPlaying: true, currentIndex: idx }));
+    setMoverState(prev => ({ ...prev, isPlaying: true, currentIndex: idx }));
     startTimer();
   }, [startTimer]);
 
   const pause = useCallback(() => {
     clearTimer();
-    setRiderState(prev => ({ ...prev, isPlaying: false }));
+    setMoverState(prev => ({ ...prev, isPlaying: false }));
   }, [clearTimer]);
 
   const next = useCallback(() => {
-    setRiderState(prev => advanceIndex(prev, 1));
+    setMoverState(prev => advanceIndex(prev, 1));
   }, [advanceIndex]);
 
   const prev = useCallback(() => {
-    setRiderState(prev => advanceIndex(prev, -1));
+    setMoverState(prev => advanceIndex(prev, -1));
   }, [advanceIndex]);
 
   const jumpTo = useCallback((index: number) => {
-    setRiderState(prev => {
+    setMoverState(prev => {
       const pts = prev.points;
       const i = Math.max(0, Math.min(index, pts.length - 1));
       const nextIdx = Math.min(i + 1, pts.length - 1);
@@ -98,7 +98,7 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
   const reset = useCallback((points: LatLng[], autoPlay = false) => {
     clearTimer();
     const heading = points.length >= 2 ? computeHeading(points[0], points[1]) : 0;
-    setRiderState({
+    setMoverState({
       isPlaying: autoPlay && points.length >= 2,
       currentIndex: 0,
       heading,
@@ -123,5 +123,5 @@ export function useStreetViewRider(): UseStreetViewRiderReturn {
     return () => clearTimer();
   }, [clearTimer]);
 
-  return { riderState, play, pause, next, prev, jumpTo, reset, setSpeed };
+  return { moverState, play, pause, next, prev, jumpTo, reset, setSpeed };
 }

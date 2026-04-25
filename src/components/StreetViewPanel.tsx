@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
-import type { LatLng } from '../types';
+import type { LatLng } from '@types';
+import { PlayIcon, PauseIcon } from '@assets';
 
 interface StreetViewPanelProps {
   position: LatLng | null;
   heading?: number;
   pitch?: number;
-  isRiding?: boolean;
+  isMoving?: boolean;
   isPlaying?: boolean;
   onPlay?: () => void;
   onPause?: () => void;
@@ -15,7 +16,7 @@ export default function StreetViewPanel({
   position,
   heading = 0,
   pitch = 0,
-  isRiding = false,
+  isMoving = false,
   isPlaying = false,
   onPlay,
   onPause,
@@ -52,13 +53,13 @@ export default function StreetViewPanel({
   return (
     <div className="street-view-container">
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      {isRiding && (
+      {isMoving && (
         <button
           className="sv-play-pause"
           onClick={isPlaying ? onPause : onPlay}
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? '⏸' : '▶'}
+          {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
       )}
     </div>

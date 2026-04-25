@@ -1,4 +1,4 @@
-import type { AppMode } from '../types';
+import type { AppMode } from '@types';
 
 interface ModeToggleProps {
   mode: AppMode;

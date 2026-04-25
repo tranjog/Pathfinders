@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { isPlausibleKey } from '../services/apiKey';
+import { isPlausibleKey } from '@services/apiKey';
 
 type Props = {
   initialKey?: string;
