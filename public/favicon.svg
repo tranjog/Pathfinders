@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f3460"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="path-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e94560"/>
+      <stop offset="100%" stop-color="#ff6b81"/>
+    </linearGradient>
+    <linearGradient id="pin-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4caf50"/>
+      <stop offset="100%" stop-color="#388e3c"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Winding path/trail -->
+  <path d="M 100 400 C 140 340, 180 360, 200 300 C 220 240, 260 280, 300 220 C 340 160, 360 200, 400 140"
+        stroke="url(#path-grad)" stroke-width="28" stroke-linecap="round" fill="none" opacity="0.3"/>
+  <path d="M 100 400 C 140 340, 180 360, 200 300 C 220 240, 260 280, 300 220 C 340 160, 360 200, 400 140"
+        stroke="url(#path-grad)" stroke-width="14" stroke-linecap="round" fill="none"
+        stroke-dasharray="8 20"/>
+  <!-- Location pin at end of path -->
+  <g transform="translate(400, 100)">
+    <path d="M 0 40 C -6 30, -28 8, -28 -8 C -28 -24, -16 -36, 0 -36 C 16 -36, 28 -24, 28 -8 C 28 8, 6 30, 0 40 Z"
+          fill="url(#pin-grad)"/>
+    <circle cx="0" cy="-8" r="10" fill="white"/>
+  </g>
+  <!-- Small location dot at start -->
+  <circle cx="100" cy="400" r="14" fill="#e94560"/>
+  <circle cx="100" cy="400" r="6" fill="white"/>
+</svg>
