@@ -80,10 +80,14 @@ On macOS, the first time you trigger location it'll show the system permission p
 ## Architecture
 
 - `src/App.tsx` — top-level layout, key resolution, browse vs route mode switching
-- `src/hooks/` — data fetching (OSM Overpass, Street View coverage, directions, geolocation)
-- `src/services/` — pure helpers (Overpass query builder, geometry, API key storage)
-- `src/components/` — UI (map, search, sidebars, dialogs, ride controls)
-- `src/config/activityConfig.ts` — per-activity OSM Overpass query + travel mode + theme
+- `src/components/` — UI (map, search, sidebars, dialogs, movement controls)
+- `src/hooks/` — data fetching (OSM Overpass, Street View coverage, directions, geolocation, map session)
+- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, API key storage)
+- `src/utils/` — map bounds, segment coloring, Overpass query builder, platform detection
+- `src/constants/activityConfig.ts` — per-activity OSM Overpass query + travel mode + theme
+- `src/constants/index.ts` — shared constants
+- `src/types/index.ts` — shared TypeScript types
+- `src/assets/icons/` — SVG icon components
 - `src-tauri/` — Rust shell, plugin registrations, capabilities, macOS Info.plist
 
 ## Attribution
