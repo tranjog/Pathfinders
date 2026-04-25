@@ -6,6 +6,8 @@ When you want to plan a specific trip, switch to Route mode: enter a start and e
 
 Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Windows, and Linux, or as a plain web app for development.
 
+> **Bring your own Google Maps API key.** Pathfinders does not ship with a key — every install must supply one. You can either bake it into the build via a `.env` file or paste it into the in-app dialog on first launch. See [Providing the Google Maps API key](#providing-the-google-maps-api-key) below. All API usage is billed to *your* Google Cloud account, so set quota caps and key restrictions before publishing builds.
+
 ## Features
 
 - **Browse mode** — overlay OSM cycleway / footway segments on the visible map, color-coded by Street View availability
@@ -14,7 +16,7 @@ Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Wi
 - **Location search** — Google Places autocomplete in the header; jump to any city, address, or POI
 - **Use my location** — center the map on your current GPS position; native OS prompt via `tauri-plugin-geolocation` in the desktop app, browser geolocation in the web build
 - **Activity switcher** — cycling vs running, with themed colors and activity-specific OSM queries
-- **In-app API key dialog** — provide your Google Maps key at runtime if you don't want to ship it in the build
+- **BYOK (bring your own key)** — supply a Google Maps key at build time (`.env`) or paste it into the in-app dialog on first launch; key stored locally, never bundled in the public source
 - **Map data attribution** — built-in OpenStreetMap credit on the map (ODbL compliance)
 
 ## Setup
