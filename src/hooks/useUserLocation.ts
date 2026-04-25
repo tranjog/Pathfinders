@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { LatLng } from '../types';
+import type { LatLng } from '@types';
 
 interface UseUserLocationReturn {
   userLocation: LatLng | null;

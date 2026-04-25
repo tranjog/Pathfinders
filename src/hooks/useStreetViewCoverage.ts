@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
-import type { CyclewaySegment, LatLng } from '../types';
-import { samplePointsAlongPath } from '../services/geometry';
-import { checkCoverageAtPoints } from '../services/streetview';
-import { SV_SAMPLE_INTERVAL_METERS } from '../constants';
+import type { CyclewaySegment, LatLng } from '@types';
+import { samplePointsAlongPath } from '@services/geometry';
+import { checkCoverageAtPoints } from '@services/streetview';
+import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
 
 interface CoverageResult {
   segment: CyclewaySegment;

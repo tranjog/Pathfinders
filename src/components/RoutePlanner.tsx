@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import type { LatLng } from '../types';
-import { LocateIcon } from '../assets';
+import type { LatLng } from '@types';
+import { LocateIcon } from '@assets';
 
 interface RoutePlannerProps {
   onRoute: (origin: LatLng, destination: LatLng) => void;

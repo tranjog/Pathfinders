@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../constants';
-import type { LatLng } from '../types';
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@constants';
+import type { LatLng } from '@types';
 import type { SearchTarget } from './LocationSearch';
 
 interface MapViewProps {

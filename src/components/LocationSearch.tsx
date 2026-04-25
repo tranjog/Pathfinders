@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import type { LatLng } from '../types';
-import { SearchIcon, LocateIcon } from '../assets';
+import type { LatLng } from '@types';
+import { SearchIcon, LocateIcon } from '@assets';
+import { isMac, isTauri } from '@utils/platform';
 
 export type SearchTarget = {
   center: LatLng;
@@ -13,9 +14,6 @@ interface Props {
   userLocation?: LatLng | null;
   onRequestLocation?: () => Promise<LatLng | null>;
 }
-
-const isMac = typeof navigator !== 'undefined' && /Mac/.test(navigator.platform);
-const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
 export default function LocationSearch({ onSelect, userLocation, onRequestLocation }: Props) {
   const [locating, setLocating] = useState(false);
@@ -95,7 +93,7 @@ function LocationErrorModal({ onClose, onRetry }: { onClose: () => void; onRetry
         </p>
         {isTauri && isMac && (
           <p className="modal-body">
-            <strong>macOS:</strong> open <em>System Settings → Privacy &amp; Security → Location Services</em>,
+            <strong>macOS:</strong> open <em>System Settings → Privacy & Security → Location Services</em>,
             enable Location Services, then enable <em>Pathfinders</em> in the list.
             Quit and relaunch the app afterwards.
           </p>

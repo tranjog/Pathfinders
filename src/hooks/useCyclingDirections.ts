@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
-import type { LatLng, RouteData } from '../types';
-import { getRoutes as getDirectionRoutes } from '../services/directions';
-import type { TravelModeKey } from '../config/activityConfig';
+import type { LatLng, RouteData, TravelModeKey } from '@types';
+import { getRoutes as getDirectionRoutes } from '@services/directions';
 
 interface UseCyclingDirectionsReturn {
   routes: RouteData[];

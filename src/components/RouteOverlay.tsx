@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { RouteData } from '../types';
+import type { RouteData } from '@types';
+import { boundsForPath } from '@utils/mapBounds';
 
 interface RouteOverlayProps {
   routes: RouteData[];
@@ -57,11 +58,7 @@ export default function RouteOverlay({ routes, selectedIndex, onSelectRoute }: R
     // Fit map to selected route
     const selected = routes[selectedIndex];
     if (selected) {
-      const bounds = new google.maps.LatLngBounds();
-      for (const p of selected.polyline) {
-        bounds.extend({ lat: p.lat, lng: p.lng });
-      }
-      map.fitBounds(bounds, 50);
+      map.fitBounds(boundsForPath(selected.polyline), 50);
     }
 
     return () => {

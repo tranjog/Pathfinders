@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { CyclewaySegment, ActivityType } from '../types';
-import { fetchPaths, getBoundsAreaKm2 } from '../services/overpass';
-import { OVERPASS_DEBOUNCE_MS, MAX_OVERPASS_AREA_KM2, MIN_BROWSE_ZOOM } from '../constants';
-import { ACTIVITY_CONFIGS } from '../config/activityConfig';
+import type { CyclewaySegment, ActivityType } from '@types';
+import { fetchPaths, getBoundsAreaKm2 } from '@services/overpass';
+import { OVERPASS_DEBOUNCE_MS, MAX_OVERPASS_AREA_KM2, MIN_BROWSE_ZOOM } from '@constants';
+import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
 
 interface UseOverpassCyclewaysResult {
   segments: CyclewaySegment[];

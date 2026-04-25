@@ -1,4 +1,4 @@
-import type { CyclewaySegment, LatLng } from '../types';
+import type { CyclewaySegment, LatLng } from '@types';
 
 const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
 
