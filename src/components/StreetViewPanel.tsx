@@ -44,9 +44,7 @@ export default function StreetViewPanel({
 
   if (!position) {
     return (
-      <div className="street-view-container">
-        <div className="no-sv">Click a path to view Street View</div>
-      </div>
+      <p className="no-sv-hint">Click a path to view Street View</p>
     );
   }
 

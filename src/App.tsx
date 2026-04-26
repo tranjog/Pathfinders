@@ -165,8 +165,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   }, [resetMover]);
 
   const handleRouteReady = useCallback(
-    (origin: LatLng, destination: LatLng) => {
-      getRoute(origin, destination);
+    (stops: LatLng[]) => {
+      getRoute(stops);
     },
     [getRoute]
   );
@@ -193,7 +193,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       </header>
       <main className="app-main" ref={mainRef}>
         <div className="map-container" style={{ flex: 1, minWidth: 300 }}>
-          <MapView userLocation={userLocation} searchTarget={searchTarget}>
+          <MapView userLocation={userLocation} searchTarget={searchTarget} isRouteMode={!isBrowse}>
             {isBrowse && (
               <CoverageOverlay
                 segments={segments}

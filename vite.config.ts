@@ -20,6 +20,7 @@ export default defineConfig({
       '@assets': path.resolve(here, 'src/assets'),
       '@components': path.resolve(here, 'src/components'),
       '@services': path.resolve(here, 'src/services'),
+      '@store': path.resolve(here, 'src/store'),
       '@constants': path.resolve(here, 'src/constants'),
     },
   },
