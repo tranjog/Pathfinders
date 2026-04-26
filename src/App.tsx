@@ -16,11 +16,12 @@ import { useOverpassPaths } from '@hooks/useOverpassPaths';
 import { useStreetViewCoverage } from '@hooks/useStreetViewCoverage';
 import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { useDirectionsStore } from '@store/directionsStore';
+import { useActivityStore } from '@store/activityStore';
 import { useApiKey } from '@hooks/useApiKey';
 import { useMapSession } from '@hooks/useMapSession';
 import { markEnvKeyDenied } from '@services/apiKey';
 import { samplePointsAlongPath } from '@services/geometry';
-import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
+import { SV_SAMPLE_INTERVAL_METERS, APP_MODE } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
 import type { AppMode, ActivityType, LatLng, PathSegment } from '@types';
 import './App.css';
@@ -94,9 +95,10 @@ type AppContentProps = {
 };
 
 function AppContent({ keySource, onOpenSettings }: AppContentProps) {
-  const [activity, setActivity] = useState<ActivityType>('cycling');
-  const [mode, setMode] = useState<AppMode>('browse');
+  const { activity, setActivity } = useActivityStore();
+  const [mode, setMode] = useState<AppMode>(APP_MODE.BROWSE);
   const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
+  const [plannerOpen, setPlannerOpen] = useState(true);
 
   const config = ACTIVITY_CONFIGS[activity];
 
@@ -123,8 +125,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     return () => { window.removeEventListener('mousemove', onMouseMove); window.removeEventListener('mouseup', onMouseUp); };
   }, []);
 
-  const isBrowse = mode === 'browse';
-  const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassPaths(isBrowse, activity);
+  const isBrowse = mode === APP_MODE.BROWSE;
+  const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassPaths(isBrowse);
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
   const { routes, selectedIndex, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useDirectionsStore();
   const route = routes[selectedIndex] ?? null;
@@ -175,7 +177,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
         <h1>{config.appTitle}</h1>
         <div className="header-toggles">
           <LocationSearch onSelect={setSearchTarget} />
-          <ActivityToggle activity={activity} onChange={handleActivityChange} />
+          <ActivityToggle onChange={handleActivityChange} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
             <button
@@ -231,6 +233,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 onRoute={handleRouteReady}
                 onClear={clearRoute}
                 loading={routeLoading}
+                open={plannerOpen}
+                onToggle={() => setPlannerOpen((v) => !v)}
               />
               {routeError && (
                 <div className="panel-message" style={{ color: 'var(--red)' }}>
@@ -257,7 +261,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                   <button
                     className="btn-go"
                     style={{ marginTop: 8, width: '100%' }}
-                    onClick={() => route && handleStartMovement(route.polyline)}
+                    onClick={() => { if (route) { handleStartMovement(route.polyline); setPlannerOpen(false); } }}
                   >
                     {config.actionVerb} this route
                   </button>

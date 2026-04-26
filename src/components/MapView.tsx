@@ -5,6 +5,7 @@ import type { SearchTarget } from './LocationSearch';
 import { useRoutePlannerStore } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
 import { reverseGeocode } from '@services/geocoder';
+import PlaybackMarker from './PlaybackMarker';
 
 interface MapViewProps {
   children?: React.ReactNode;
@@ -70,6 +71,7 @@ export default function MapView({ children, searchTarget, isRouteMode = false }:
         onClick={handleMapClick}
       >
         {children}
+        <PlaybackMarker />
         {isRouteMode && stops.map((stop, i) =>
           stop.latLng ? (
             <AdvancedMarker key={i} position={stop.latLng}>
