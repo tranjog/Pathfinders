@@ -96,7 +96,7 @@ type AppContentProps = {
 
 function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const { activity, setActivity } = useActivityStore();
-  const [mode, setMode] = useState<AppMode>(APP_MODE.BROWSE);
+  const [mode, setMode] = useState<AppMode>(APP_MODE.ROUTE);
   const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
   const [plannerOpen, setPlannerOpen] = useState(true);
 
