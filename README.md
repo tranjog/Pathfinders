@@ -2,7 +2,7 @@
 
 Pathfinders is a desktop app for scouting cycling and running routes before you head out. Pan the map to anywhere in the world and the app pulls the local cycleway and footway network from OpenStreetMap, overlays it on Google Maps, and tells you which segments have Street View coverage. Click any segment to drop into Street View at that point, then play it back as a virtual "ride" or "run" sampled along the path.
 
-When you want to plan a specific trip, switch to Route mode: enter a start and end (or use your current location), pick from cycling/walking route alternatives, and preview the whole route in Street View frame by frame. Toggle between cycling and running themes; each loads its own OSM query and the appropriate Google travel mode.
+When you want to plan a specific trip, switch to Route mode: enter up to 10 stops (type an address, click the map, or use your current location), pick from cycling/walking route alternatives, and preview the whole route in Street View frame by frame. Toggle between cycling and running themes; each loads its own OSM query and the appropriate Google travel mode.
 
 Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Windows, and Linux, or as a plain web app for development.
 
@@ -11,7 +11,8 @@ Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Wi
 ## Features
 
 - **Browse mode** — overlay OSM cycleway / footway segments on the visible map, color-coded by Street View availability
-- **Route mode** — Google Maps cycling/walking directions with multiple route alternatives
+- **Route mode** — multi-stop Google Maps cycling/walking directions (up to 10 stops); multiple route alternatives when no waypoints are present
+- **Map-click location picking** — click any point on the map to set a stop; reverse-geocoded address fills the input automatically
 - **Street View ride** — animated playback of any segment or full route, sampled at fixed intervals with auto-computed heading
 - **Location search** — Google Places autocomplete in the header; jump to any city, address, or POI
 - **Use my location** — center the map on your current GPS position; native OS prompt via `tauri-plugin-geolocation` in the desktop app, browser geolocation in the web build
@@ -82,7 +83,8 @@ On macOS, the first time you trigger location it'll show the system permission p
 - `src/App.tsx` — top-level layout, key resolution, browse vs route mode switching
 - `src/components/` — UI (map, search, sidebars, dialogs, movement controls)
 - `src/hooks/` — data fetching (OSM Overpass, Street View coverage, directions, geolocation, map session)
-- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, API key storage)
+- `src/store/` — Zustand stores (route planner state: stops, map pick mode)
+- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, geocoding, API key storage)
 - `src/utils/` — map bounds, segment coloring, Overpass query builder, platform detection
 - `src/constants/activityConfig.ts` — per-activity OSM Overpass query + travel mode + theme
 - `src/constants/index.ts` — shared constants

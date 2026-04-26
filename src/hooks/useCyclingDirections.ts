@@ -8,7 +8,7 @@ interface UseCyclingDirectionsReturn {
   route: RouteData | null;
   loading: boolean;
   error: string | null;
-  getRoute: (origin: LatLng, destination: LatLng) => Promise<void>;
+  getRoute: (stops: LatLng[]) => Promise<void>;
   selectRoute: (index: number) => void;
   clearRoute: () => void;
 }
@@ -21,13 +21,13 @@ export function useCyclingDirections(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getRoute = useCallback(async (origin: LatLng, destination: LatLng) => {
+  const getRoute = useCallback(async (stops: LatLng[]) => {
     setLoading(true);
     setError(null);
 
     try {
       const travelMode = google.maps.TravelMode[travelModeKey];
-      const results = await getDirectionRoutes(origin, destination, travelMode);
+      const results = await getDirectionRoutes(stops, travelMode);
       setRoutes(results);
       setSelectedIndex(0);
     } catch (err) {

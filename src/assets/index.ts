@@ -5,3 +5,4 @@ export { default as PlayIcon } from './icons/PlayIcon';
 export { default as PauseIcon } from './icons/PauseIcon';
 export { default as SkipBackIcon } from './icons/SkipBackIcon';
 export { default as SkipForwardIcon } from './icons/SkipForwardIcon';
+export { default as MapPinIcon } from './icons/MapPinIcon';

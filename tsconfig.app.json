@@ -28,6 +28,7 @@
       "@assets": ["src/assets/index.ts"],
       "@components/*": ["src/components/*"],
       "@services/*": ["src/services/*"],
+      "@store/*": ["src/store/*"],
       "@constants/*": ["src/constants/*"],
       "@constants": ["src/constants/index.ts"]
     },

@@ -3,6 +3,11 @@ export interface LatLng {
   lng: number;
 }
 
+export interface Stop {
+  latLng: LatLng | null;
+  label: string;
+}
+
 export interface CyclewaySegment {
   id: number;
   name?: string;
