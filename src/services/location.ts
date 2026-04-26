@@ -1,13 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
 import type { LatLng } from '@types';
-
-interface UseUserLocationReturn {
-  userLocation: LatLng | null;
-  source: LocationSource | null;
-  loading: boolean;
-  error: string | null;
-  requestLocation: () => Promise<LatLng | null>;
-}
 
 export type LocationSource = 'native' | 'ip';
 
@@ -61,7 +52,7 @@ async function getIpLocation(): Promise<LatLng> {
   return { lat: data.latitude, lng: data.longitude };
 }
 
-async function resolveLocation(): Promise<{ loc: LatLng; source: LocationSource }> {
+export async function resolveLocation(): Promise<{ loc: LatLng; source: LocationSource }> {
   const errors: string[] = [];
 
   if (isTauri()) {
@@ -81,35 +72,4 @@ async function resolveLocation(): Promise<{ loc: LatLng; source: LocationSource 
   catch (e) { errors.push(`ip: ${(e as Error).message}`); }
 
   throw new Error(errors.join(' | '));
-}
-
-export function useUserLocation(requestOnMount = true): UseUserLocationReturn {
-  const [userLocation, setUserLocation] = useState<LatLng | null>(null);
-  const [source, setSource] = useState<LocationSource | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const requestLocation = useCallback(async (): Promise<LatLng | null> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { loc, source: src } = await resolveLocation();
-      setUserLocation(loc);
-      setSource(src);
-      return loc;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Location unavailable';
-      setError(msg);
-      console.warn('[useUserLocation]', msg);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (requestOnMount) requestLocation();
-  }, [requestOnMount, requestLocation]);
-
-  return { userLocation, source, loading, error, requestLocation };
 }

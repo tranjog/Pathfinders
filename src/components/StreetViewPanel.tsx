@@ -1,28 +1,19 @@
 import { useEffect, useRef } from 'react';
 import type { LatLng } from '@types';
 import { PlayIcon, PauseIcon } from '@assets';
+import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 
 interface StreetViewPanelProps {
   position: LatLng | null;
   heading?: number;
   pitch?: number;
-  isMoving?: boolean;
-  isPlaying?: boolean;
-  onPlay?: () => void;
-  onPause?: () => void;
 }
 
-export default function StreetViewPanel({
-  position,
-  heading = 0,
-  pitch = 0,
-  isMoving = false,
-  isPlaying = false,
-  onPlay,
-  onPause,
-}: StreetViewPanelProps) {
+export default function StreetViewPanel({ position, heading = 0, pitch = 0 }: StreetViewPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const { isPlaying, points, play, pause } = useStreetViewPlaybackStore();
+  const isMoving = points.length > 0;
 
   useEffect(() => {
     if (!containerRef.current || !position) return;
@@ -54,7 +45,7 @@ export default function StreetViewPanel({
       {isMoving && (
         <button
           className="sv-play-pause"
-          onClick={isPlaying ? onPause : onPlay}
+          onClick={isPlaying ? pause : play}
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {isPlaying ? <PauseIcon /> : <PlayIcon />}

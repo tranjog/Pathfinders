@@ -1,14 +1,5 @@
-import type { MoverState } from '@types';
+import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '@assets';
-
-interface MovementControlsProps {
-  moverState: MoverState;
-  onPlay: () => void;
-  onPause: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-  onSpeedChange: (ms: number) => void;
-}
 
 const SPEEDS = [
   { label: '0.5x', ms: 4000 },
@@ -17,15 +8,10 @@ const SPEEDS = [
   { label: '4x', ms: 500 },
 ];
 
-export default function MovementControls({
-  moverState,
-  onPlay,
-  onPause,
-  onNext,
-  onPrev,
-  onSpeedChange,
-}: MovementControlsProps) {
-  const { isPlaying, currentIndex, points } = moverState;
+export default function MovementControls() {
+  const { isPlaying, currentIndex, points, play, pause, next, prev, setSpeed } =
+    useStreetViewPlaybackStore();
+
   const total = points.length;
   const progress = total > 1 ? currentIndex / (total - 1) : 0;
 
@@ -33,13 +19,13 @@ export default function MovementControls({
 
   return (
     <div className="movement-controls">
-      <button onClick={onPrev} disabled={currentIndex === 0} aria-label="Previous">
+      <button onClick={prev} disabled={currentIndex === 0} aria-label="Previous">
         <SkipBackIcon />
       </button>
-      <button onClick={isPlaying ? onPause : onPlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+      <button onClick={isPlaying ? pause : play} aria-label={isPlaying ? 'Pause' : 'Play'}>
         {isPlaying ? <PauseIcon /> : <PlayIcon />}
       </button>
-      <button onClick={onNext} disabled={currentIndex >= total - 1} aria-label="Next">
+      <button onClick={next} disabled={currentIndex >= total - 1} aria-label="Next">
         <SkipForwardIcon />
       </button>
       <div className="progress">
@@ -53,7 +39,7 @@ export default function MovementControls({
       </span>
       <select
         defaultValue="2000"
-        onChange={(e) => onSpeedChange(Number(e.target.value))}
+        onChange={(e) => setSpeed(Number(e.target.value))}
         style={{
           background: 'var(--bg-panel)',
           color: 'var(--text)',

@@ -8,7 +8,7 @@ export interface Stop {
   label: string;
 }
 
-export interface CyclewaySegment {
+export interface PathSegment {
   id: number;
   name?: string;
   points: LatLng[];

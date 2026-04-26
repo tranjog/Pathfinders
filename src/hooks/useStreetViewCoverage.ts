@@ -1,18 +1,18 @@
 import { useState, useCallback, useRef } from 'react';
-import type { CyclewaySegment, LatLng } from '@types';
+import type { PathSegment, LatLng } from '@types';
 import { samplePointsAlongPath } from '@services/geometry';
 import { checkCoverageAtPoints } from '@services/streetview';
 import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
 
 interface CoverageResult {
-  segment: CyclewaySegment;
+  segment: PathSegment;
   coverage: boolean[];
   sampledPoints: LatLng[];
   ratio: number;
 }
 
 interface UseStreetViewCoverageReturn {
-  checkSegmentCoverage: (segment: CyclewaySegment) => Promise<CoverageResult>;
+  checkSegmentCoverage: (segment: PathSegment) => Promise<CoverageResult>;
   checking: boolean;
   progress: number;
 }
@@ -22,7 +22,7 @@ export function useStreetViewCoverage(): UseStreetViewCoverageReturn {
   const [progress, setProgress] = useState(0);
   const abortRef = useRef(false);
 
-  const checkSegmentCoverage = useCallback(async (segment: CyclewaySegment): Promise<CoverageResult> => {
+  const checkSegmentCoverage = useCallback(async (segment: PathSegment): Promise<CoverageResult> => {
     abortRef.current = false;
     setChecking(true);
     setProgress(0);

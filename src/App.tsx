@@ -12,18 +12,17 @@ import MovementControls from '@components/MovementControls';
 import ApiKeyDialog from '@components/ApiKeyDialog';
 import LocationSearch, { type SearchTarget } from '@components/LocationSearch';
 import { SettingsIcon } from '@assets';
-import { useOverpassCycleways } from '@hooks/useOverpassCycleways';
+import { useOverpassPaths } from '@hooks/useOverpassPaths';
 import { useStreetViewCoverage } from '@hooks/useStreetViewCoverage';
-import { useCyclingDirections } from '@hooks/useCyclingDirections';
-import { useStreetViewMover } from '@hooks/useStreetViewMover';
-import { useUserLocation } from '@hooks/useUserLocation';
+import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
+import { useDirectionsStore } from '@store/directionsStore';
 import { useApiKey } from '@hooks/useApiKey';
 import { useMapSession } from '@hooks/useMapSession';
 import { markEnvKeyDenied } from '@services/apiKey';
 import { samplePointsAlongPath } from '@services/geometry';
 import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
-import type { AppMode, ActivityType, LatLng, CyclewaySegment } from '@types';
+import type { AppMode, ActivityType, LatLng, PathSegment } from '@types';
 import './App.css';
 
 declare global {
@@ -125,11 +124,11 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   }, []);
 
   const isBrowse = mode === 'browse';
-  const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassCycleways(isBrowse, activity);
+  const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassPaths(isBrowse, activity);
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
-  const { routes, selectedIndex, route, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useCyclingDirections(config.travelModeKey);
-  const { moverState, play, pause, next, prev, reset: resetMover, setSpeed } = useStreetViewMover();
-  const { userLocation, requestLocation } = useUserLocation();
+  const { routes, selectedIndex, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useDirectionsStore();
+  const route = routes[selectedIndex] ?? null;
+  const { points: moverPoints, currentIndex: moverIndex, heading: moverHeading, reset: resetPlayback } = useStreetViewPlaybackStore();
   const {
     segments,
     selectedSegment,
@@ -140,35 +139,34 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   } = useMapSession(rawSegments, checkSegmentCoverage);
 
   const handleSegmentClick = useCallback(
-    (segment: CyclewaySegment, latLng: google.maps.LatLng) => {
-      resetMover([], false);
+    (segment: PathSegment, latLng: google.maps.LatLng) => {
+      resetPlayback([], false);
       return handleSegmentClickRaw(segment, latLng);
     },
-    [handleSegmentClickRaw, resetMover]
+    [handleSegmentClickRaw, resetPlayback]
   );
 
   const handleActivityChange = useCallback((next: ActivityType) => {
     setActivity(next);
     resetMapSession();
     clearRoute();
-    resetMover([], false);
-  }, [resetMapSession, clearRoute, resetMover]);
+    resetPlayback([], false);
+  }, [resetMapSession, clearRoute, resetPlayback]);
 
-  // Mover position takes precedence over manual selection while moving
-  const isMoving = moverState.points.length > 0;
-  const effectivePosition = isMoving ? moverState.points[moverState.currentIndex] : streetViewPosition;
-  const effectiveHeading = isMoving ? moverState.heading : streetViewHeading;
+  const isMoving = moverPoints.length > 0;
+  const effectivePosition = isMoving ? moverPoints[moverIndex] : streetViewPosition;
+  const effectiveHeading = isMoving ? moverHeading : streetViewHeading;
 
   const handleStartMovement = useCallback((points: LatLng[]) => {
     const sampled = samplePointsAlongPath(points, SV_SAMPLE_INTERVAL_METERS);
-    resetMover(sampled, true);
-  }, [resetMover]);
+    resetPlayback(sampled, true);
+  }, [resetPlayback]);
 
   const handleRouteReady = useCallback(
     (stops: LatLng[]) => {
-      getRoute(stops);
+      getRoute(stops, config.travelModeKey);
     },
-    [getRoute]
+    [getRoute, config.travelModeKey]
   );
 
   return (
@@ -176,7 +174,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       <header className="app-header">
         <h1>{config.appTitle}</h1>
         <div className="header-toggles">
-          <LocationSearch onSelect={setSearchTarget} userLocation={userLocation} onRequestLocation={requestLocation} />
+          <LocationSearch onSelect={setSearchTarget} />
           <ActivityToggle activity={activity} onChange={handleActivityChange} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
@@ -193,20 +191,14 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       </header>
       <main className="app-main" ref={mainRef}>
         <div className="map-container" style={{ flex: 1, minWidth: 300 }}>
-          <MapView userLocation={userLocation} searchTarget={searchTarget} isRouteMode={!isBrowse}>
+          <MapView searchTarget={searchTarget} isRouteMode={!isBrowse}>
             {isBrowse && (
               <CoverageOverlay
                 segments={segments}
                 onSegmentClick={handleSegmentClick}
               />
             )}
-            {!isBrowse && (
-              <RouteOverlay
-                routes={routes}
-                selectedIndex={selectedIndex}
-                onSelectRoute={selectRoute}
-              />
-            )}
+            {!isBrowse && <RouteOverlay />}
           </MapView>
         </div>
         <div
@@ -230,21 +222,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
               <StreetViewPanel
                 position={effectivePosition}
                 heading={effectiveHeading}
-                isMoving={isMoving}
-                isPlaying={moverState.isPlaying}
-                onPlay={play}
-                onPause={pause}
               />
-              {isMoving && (
-                <MovementControls
-                  moverState={moverState}
-                  onPlay={play}
-                  onPause={pause}
-                  onNext={next}
-                  onPrev={prev}
-                  onSpeedChange={setSpeed}
-                />
-              )}
+              {isMoving && <MovementControls />}
             </>
           ) : (
             <>
@@ -252,7 +231,6 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 onRoute={handleRouteReady}
                 onClear={clearRoute}
                 loading={routeLoading}
-                userLocation={userLocation}
               />
               {routeError && (
                 <div className="panel-message" style={{ color: 'var(--red)' }}>
@@ -288,21 +266,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
               <StreetViewPanel
                 position={effectivePosition}
                 heading={effectiveHeading}
-                isMoving={isMoving}
-                isPlaying={moverState.isPlaying}
-                onPlay={play}
-                onPause={pause}
               />
-              {isMoving && (
-                <MovementControls
-                  moverState={moverState}
-                  onPlay={play}
-                  onPause={pause}
-                  onNext={next}
-                  onPrev={prev}
-                  onSpeedChange={setSpeed}
-                />
-              )}
+              {isMoving && <MovementControls />}
             </>
           )}
         </div>

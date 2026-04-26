@@ -1,23 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { RouteData } from '@types';
 import { boundsForPath } from '@utils/mapBounds';
+import { useDirectionsStore } from '@store/directionsStore';
 
-interface RouteOverlayProps {
-  routes: RouteData[];
-  selectedIndex: number;
-  onSelectRoute?: (index: number) => void;
-}
-
-export default function RouteOverlay({ routes, selectedIndex, onSelectRoute }: RouteOverlayProps) {
+export default function RouteOverlay() {
   const map = useMap();
+  const { routes, selectedIndex, selectRoute } = useDirectionsStore();
   const polylinesRef = useRef<google.maps.Polyline[]>([]);
   const listenersRef = useRef<google.maps.MapsEventListener[]>([]);
 
   useEffect(() => {
     if (!map) return;
 
-    // Clean up previous polylines
     for (const p of polylinesRef.current) p.setMap(null);
     for (const l of listenersRef.current) google.maps.event.removeListener(l);
     polylinesRef.current = [];
@@ -25,7 +19,6 @@ export default function RouteOverlay({ routes, selectedIndex, onSelectRoute }: R
 
     if (routes.length === 0) return;
 
-    // Draw unselected routes first (below), then selected on top
     const order = routes.map((_, i) => i).sort((a, b) => {
       if (a === selectedIndex) return 1;
       if (b === selectedIndex) return -1;
@@ -49,13 +42,10 @@ export default function RouteOverlay({ routes, selectedIndex, onSelectRoute }: R
 
       polylinesRef.current.push(polyline);
 
-      if (onSelectRoute) {
-        const listener = polyline.addListener('click', () => onSelectRoute(i));
-        listenersRef.current.push(listener);
-      }
+      const listener = polyline.addListener('click', () => selectRoute(i));
+      listenersRef.current.push(listener);
     }
 
-    // Fit map to selected route
     const selected = routes[selectedIndex];
     if (selected) {
       map.fitBounds(boundsForPath(selected.polyline), 50);
@@ -67,7 +57,7 @@ export default function RouteOverlay({ routes, selectedIndex, onSelectRoute }: R
       polylinesRef.current = [];
       listenersRef.current = [];
     };
-  }, [map, routes, selectedIndex, onSelectRoute]);
+  }, [map, routes, selectedIndex, selectRoute]);
 
   return null;
 }

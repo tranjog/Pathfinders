@@ -3,12 +3,12 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '@types';
 import { LocateIcon, MapPinIcon } from '@assets';
 import { useRoutePlannerStore, MAX_STOPS } from '@store/routePlannerStore';
+import { useUserLocationStore } from '@store/userLocationStore';
 
 interface RoutePlannerProps {
   onRoute: (stops: LatLng[]) => void;
   onClear: () => void;
   loading: boolean;
-  userLocation?: LatLng | null;
 }
 
 function stopLabel(index: number, total: number): string {
@@ -23,9 +23,10 @@ function stopPlaceholder(index: number, total: number): string {
   return `Stop ${index + 1}`;
 }
 
-export default function RoutePlanner({ onRoute, onClear, loading, userLocation }: RoutePlannerProps) {
+export default function RoutePlanner({ onRoute, onClear, loading }: RoutePlannerProps) {
   const placesLib = useMapsLibrary('places');
   const { stops, mapPickMode, setStop, addStop, removeStop, setMapPickMode, clear } = useRoutePlannerStore();
+  const { userLocation } = useUserLocationStore();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const autoRefs = useRef<(google.maps.places.Autocomplete | null)[]>([]);
