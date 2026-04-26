@@ -3,6 +3,7 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '@types';
 import { SearchIcon, LocateIcon } from '@assets';
 import { isMac, isTauri } from '@utils/platform';
+import { useUserLocationStore } from '@store/userLocationStore';
 
 export type SearchTarget = {
   center: LatLng;
@@ -11,19 +12,18 @@ export type SearchTarget = {
 
 interface Props {
   onSelect: (target: SearchTarget) => void;
-  userLocation?: LatLng | null;
-  onRequestLocation?: () => Promise<LatLng | null>;
 }
 
-export default function LocationSearch({ onSelect, userLocation, onRequestLocation }: Props) {
+export default function LocationSearch({ onSelect }: Props) {
+  const { userLocation, requestLocation } = useUserLocationStore();
   const [locating, setLocating] = useState(false);
   const [showError, setShowError] = useState(false);
 
   const handleLocate = async () => {
     let loc = userLocation ?? null;
-    if (!loc && onRequestLocation) {
+    if (!loc) {
       setLocating(true);
-      try { loc = await onRequestLocation(); } finally { setLocating(false); }
+      try { loc = await requestLocation(); } finally { setLocating(false); }
     }
     if (!loc) {
       setShowError(true);

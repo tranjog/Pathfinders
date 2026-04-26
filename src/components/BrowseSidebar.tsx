@@ -1,11 +1,11 @@
-import type { CyclewaySegment, LatLng, ActivityConfig } from '@types';
+import type { PathSegment, LatLng, ActivityConfig } from '@types';
 
 interface BrowseSidebarProps {
   loading: boolean;
   error: string | null;
   tooZoomedOut: boolean;
   segmentCount: number;
-  selectedSegment?: CyclewaySegment | null;
+  selectedSegment?: PathSegment | null;
   checking?: boolean;
   coverageProgress?: number;
   onStartMovement?: (points: LatLng[]) => void;

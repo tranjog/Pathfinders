@@ -1,19 +1,19 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Map, useMap, useMapsLibrary, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps';
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@constants';
-import type { LatLng } from '@types';
 import type { SearchTarget } from './LocationSearch';
 import { useRoutePlannerStore } from '@store/routePlannerStore';
+import { useUserLocationStore } from '@store/userLocationStore';
 import { reverseGeocode } from '@services/geocoder';
 
 interface MapViewProps {
   children?: React.ReactNode;
-  userLocation?: LatLng | null;
   searchTarget?: SearchTarget | null;
   isRouteMode?: boolean;
 }
 
-export default function MapView({ children, userLocation, searchTarget, isRouteMode = false }: MapViewProps) {
+export default function MapView({ children, searchTarget, isRouteMode = false }: MapViewProps) {
+  const { userLocation } = useUserLocationStore();
   const map = useMap();
   const mapsLib = useMapsLibrary('maps');
   const bicyclingLayerRef = useRef<google.maps.BicyclingLayer | null>(null);

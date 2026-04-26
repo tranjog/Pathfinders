@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { CyclewaySegment, ActivityType } from '@types';
+import type { PathSegment, ActivityType } from '@types';
 import { fetchPaths, getBoundsAreaKm2 } from '@services/overpass';
 import { OVERPASS_DEBOUNCE_MS, MAX_OVERPASS_AREA_KM2, MIN_BROWSE_ZOOM } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
 
-interface UseOverpassCyclewaysResult {
-  segments: CyclewaySegment[];
+interface UseOverpassPathsResult {
+  segments: PathSegment[];
   loading: boolean;
   error: string | null;
   tooZoomedOut: boolean;
 }
 
-export function useOverpassCycleways(active: boolean, activity: ActivityType = 'cycling'): UseOverpassCyclewaysResult {
+export function useOverpassPaths(active: boolean, activity: ActivityType = 'cycling'): UseOverpassPathsResult {
   const map = useMap();
-  const [segments, setSegments] = useState<CyclewaySegment[]>([]);
+  const [segments, setSegments] = useState<PathSegment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tooZoomedOut, setTooZoomedOut] = useState(false);
@@ -22,7 +22,6 @@ export function useOverpassCycleways(active: boolean, activity: ActivityType = '
 
   const config = ACTIVITY_CONFIGS[activity];
 
-  // Clear segments when activity changes
   useEffect(() => {
     setSegments([]);
   }, [activity]);
@@ -62,7 +61,6 @@ export function useOverpassCycleways(active: boolean, activity: ActivityType = '
       debounceRef.current = setTimeout(loadPaths, OVERPASS_DEBOUNCE_MS);
     });
 
-    // Initial load
     loadPaths();
 
     return () => {

@@ -1,19 +1,19 @@
 import { useCallback, useState } from 'react';
-import type { CyclewaySegment, LatLng } from '@types';
+import type { PathSegment, LatLng } from '@types';
 import { computeHeading } from '@services/geometry';
 
-type CheckCoverage = (segment: CyclewaySegment) => Promise<{ segment: CyclewaySegment }>;
+type CheckCoverage = (segment: PathSegment) => Promise<{ segment: PathSegment }>;
 
-export function useMapSession(rawSegments: CyclewaySegment[], checkSegmentCoverage: CheckCoverage) {
-  const [selectedSegment, setSelectedSegment] = useState<CyclewaySegment | null>(null);
+export function useMapSession(rawSegments: PathSegment[], checkSegmentCoverage: CheckCoverage) {
+  const [selectedSegment, setSelectedSegment] = useState<PathSegment | null>(null);
   const [streetViewPosition, setStreetViewPosition] = useState<LatLng | null>(null);
   const [streetViewHeading, setStreetViewHeading] = useState(0);
-  const [checkedSegments, setCheckedSegments] = useState<Map<number, CyclewaySegment>>(new Map());
+  const [checkedSegments, setCheckedSegments] = useState<Map<number, PathSegment>>(new Map());
 
   const segments = rawSegments.map(s => checkedSegments.get(s.id) ?? s);
 
   const handleSegmentClick = useCallback(
-    async (segment: CyclewaySegment, latLng: google.maps.LatLng) => {
+    async (segment: PathSegment, latLng: google.maps.LatLng) => {
       const position = { lat: latLng.lat(), lng: latLng.lng() };
       setStreetViewPosition(position);
       setSelectedSegment(segment);

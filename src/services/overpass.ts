@@ -1,4 +1,4 @@
-import type { CyclewaySegment, LatLng } from '@types';
+import type { PathSegment, LatLng } from '@types';
 
 const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
 
@@ -23,7 +23,7 @@ interface OverpassResponse {
 }
 
 // Cache keyed by activity + quantized bounding box
-const cache = new Map<string, CyclewaySegment[]>();
+const cache = new Map<string, PathSegment[]>();
 
 function quantizeBounds(south: number, west: number, north: number, east: number): string {
   const q = (v: number) => (Math.round(v * 100) / 100).toFixed(2);
@@ -34,7 +34,7 @@ export async function fetchPaths(
   bounds: google.maps.LatLngBounds,
   queryBuilder: (bbox: string) => string,
   activityKey: string,
-): Promise<CyclewaySegment[]> {
+): Promise<PathSegment[]> {
   const ne = bounds.getNorthEast();
   const sw = bounds.getSouthWest();
   const south = sw.lat();
@@ -70,7 +70,7 @@ export async function fetchPaths(
   }
 
   // Build segments from ways
-  const segments: CyclewaySegment[] = [];
+  const segments: PathSegment[] = [];
   for (const el of data.elements) {
     if (el.type === 'way') {
       const points: LatLng[] = [];

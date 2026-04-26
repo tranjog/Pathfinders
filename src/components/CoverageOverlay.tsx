@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { CyclewaySegment } from '@types';
+import type { PathSegment } from '@types';
 import { getSegmentColor } from '@utils/segmentColor';
 
 interface CoverageOverlayProps {
-  segments: CyclewaySegment[];
-  onSegmentClick?: (segment: CyclewaySegment, latLng: google.maps.LatLng) => void;
+  segments: PathSegment[];
+  onSegmentClick?: (segment: PathSegment, latLng: google.maps.LatLng) => void;
 }
 
 export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOverlayProps) {
