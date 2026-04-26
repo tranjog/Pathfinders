@@ -24,9 +24,11 @@ export interface RouteData {
   duration: string;
 }
 
-export type AppMode = 'browse' | 'route';
+import { ACTIVITY, APP_MODE, TRAVEL_MODE } from '@constants';
 
-export type ActivityType = 'cycling' | 'running';
+export type AppMode = typeof APP_MODE[keyof typeof APP_MODE];
+
+export type ActivityType = typeof ACTIVITY[keyof typeof ACTIVITY];
 
 export interface MoverState {
   isPlaying: boolean;
@@ -35,7 +37,7 @@ export interface MoverState {
   points: LatLng[];
 }
 
-export type TravelModeKey = 'BICYCLING' | 'WALKING';
+export type TravelModeKey = typeof TRAVEL_MODE[keyof typeof TRAVEL_MODE];
 
 export interface ActivityConfig {
   appTitle: string;

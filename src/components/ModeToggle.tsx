@@ -1,4 +1,5 @@
 import type { AppMode } from '@types';
+import { APP_MODE } from '@constants';
 
 interface ModeToggleProps {
   mode: AppMode;
@@ -9,14 +10,14 @@ export default function ModeToggle({ mode, onChange }: ModeToggleProps) {
   return (
     <div className="mode-toggle">
       <button
-        className={mode === 'browse' ? 'active' : ''}
-        onClick={() => onChange('browse')}
+        className={mode === APP_MODE.BROWSE ? 'active' : ''}
+        onClick={() => onChange(APP_MODE.BROWSE)}
       >
         Browse
       </button>
       <button
-        className={mode === 'route' ? 'active' : ''}
-        onClick={() => onChange('route')}
+        className={mode === APP_MODE.ROUTE ? 'active' : ''}
+        onClick={() => onChange(APP_MODE.ROUTE)}
       >
         Route
       </button>

@@ -12,13 +12,16 @@ interface StreetViewPanelProps {
 export default function StreetViewPanel({ position, heading = 0, pitch = 0 }: StreetViewPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const panoramaContainerRef = useRef<HTMLDivElement | null>(null);
   const { isPlaying, points, play, pause } = useStreetViewPlaybackStore();
   const isMoving = points.length > 0;
 
   useEffect(() => {
     if (!containerRef.current || !position) return;
 
-    if (!panoramaRef.current) {
+    const stale = panoramaRef.current && panoramaContainerRef.current !== containerRef.current;
+    if (!panoramaRef.current || stale) {
+      panoramaContainerRef.current = containerRef.current;
       panoramaRef.current = new google.maps.StreetViewPanorama(containerRef.current, {
         position: { lat: position.lat, lng: position.lng },
         pov: { heading, pitch },

@@ -6,3 +6,5 @@ export { default as PauseIcon } from './icons/PauseIcon';
 export { default as SkipBackIcon } from './icons/SkipBackIcon';
 export { default as SkipForwardIcon } from './icons/SkipForwardIcon';
 export { default as MapPinIcon } from './icons/MapPinIcon';
+export { default as RunnerIcon } from './icons/RunnerIcon';
+export { default as CyclistIcon } from './icons/CyclistIcon';

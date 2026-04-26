@@ -9,6 +9,8 @@ interface RoutePlannerProps {
   onRoute: (stops: LatLng[]) => void;
   onClear: () => void;
   loading: boolean;
+  open: boolean;
+  onToggle: () => void;
 }
 
 function stopLabel(index: number, total: number): string {
@@ -23,7 +25,7 @@ function stopPlaceholder(index: number, total: number): string {
   return `Stop ${index + 1}`;
 }
 
-export default function RoutePlanner({ onRoute, onClear, loading }: RoutePlannerProps) {
+export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle }: RoutePlannerProps) {
   const placesLib = useMapsLibrary('places');
   const { stops, mapPickMode, setStop, addStop, removeStop, setMapPickMode, clear } = useRoutePlannerStore();
   const { userLocation } = useUserLocationStore();
@@ -100,7 +102,17 @@ export default function RoutePlanner({ onRoute, onClear, loading }: RoutePlanner
 
   return (
     <div className="panel-section">
-      <h3>Route Planner</h3>
+      <div className="panel-section__header" onClick={onToggle}>
+        <h3>Route Planner</h3>
+        <svg
+          className={`panel-section__chevron${open ? ' panel-section__chevron--open' : ''}`}
+          width="18" height="10" viewBox="0 0 18 10"
+          fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        >
+          <polyline points="1,1 9,9 17,1" />
+        </svg>
+      </div>
+      <div className={`panel-section__body${open ? '' : ' panel-section__body--collapsed'}`}>
       <div className="route-planner">
         <div className="stop-list">
           {stops.map((stop, i) => {
@@ -158,6 +170,7 @@ export default function RoutePlanner({ onRoute, onClear, loading }: RoutePlanner
           </button>
           <button className="btn-secondary" onClick={handleClear}>Clear</button>
         </div>
+      </div>
       </div>
     </div>
   );

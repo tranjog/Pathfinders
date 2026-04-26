@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import type { PathSegment, ActivityType } from '@types';
+import type { PathSegment } from '@types';
 import { fetchPaths, getBoundsAreaKm2 } from '@services/overpass';
 import { OVERPASS_DEBOUNCE_MS, MAX_OVERPASS_AREA_KM2, MIN_BROWSE_ZOOM } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
+import { useActivityStore } from '@store/activityStore';
 
 interface UseOverpassPathsResult {
   segments: PathSegment[];
@@ -12,8 +13,9 @@ interface UseOverpassPathsResult {
   tooZoomedOut: boolean;
 }
 
-export function useOverpassPaths(active: boolean, activity: ActivityType = 'cycling'): UseOverpassPathsResult {
+export function useOverpassPaths(active: boolean): UseOverpassPathsResult {
   const map = useMap();
+  const { activity } = useActivityStore();
   const [segments, setSegments] = useState<PathSegment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
