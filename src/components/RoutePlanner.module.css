@@ -129,19 +129,18 @@
   border-radius: 4px;
   background: var(--bg);
   overflow: hidden;
-  transition: border-color 0.15s;
-}
-
-.stopInputContainer:focus-within {
-  border-color: var(--accent);
 }
 
 .inputWithAction gmp-place-autocomplete {
   display: block;
   width: 100%;
   background: transparent;
-  /* Attempt to clear Google's Material surface token */
+  outline: none;
+  /* Attempt to suppress Google's internal focus ring via Material tokens */
   --gmp-color-surface: transparent;
+  --gmp-color-primary: transparent;
+  --gmp-input-border-color: transparent;
+  --gmp-input-active-border-color: transparent;
 }
 
 .inputWithAction gmp-place-autocomplete::part(input) {
@@ -151,6 +150,7 @@
   background: transparent;
   color: var(--text);
   outline: none;
+  box-shadow: none;
   font-size: inherit;
   font-family: inherit;
   box-sizing: border-box;
