@@ -36,6 +36,10 @@
   overflow: hidden;
 }
 
+.sectionBody:not(.sectionBodyCollapsed) > * {
+  overflow: visible;
+}
+
 .routePlanner {
   display: flex;
   flex-direction: column;
@@ -54,7 +58,8 @@
   gap: 6px;
 }
 
-.stopRowPicking .inputWithAction gmp-place-autocomplete::part(input) {
+/* Picking state targets our container's ::after overlay */
+.stopRowPicking .stopInputContainer::after {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
@@ -119,31 +124,58 @@
   min-width: 0;
 }
 
-/* Container div is transparent — gmp-place-autocomplete becomes a flex child */
 .stopInputContainer {
-  display: contents;
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.stopInputContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000003; /* beats gmp-place-autocomplete's internal focus-ring (z-index: 1000002) */
+  box-shadow: inset 0 0 0 4px var(--bg); /* paints over focus-ring border */
+  transition: border-color 0.15s;
+}
+
+.stopInputContainer:focus-within {
+  z-index: 1;
+}
+
+.stopInputContainer:focus-within::after {
+  border-color: var(--accent);
 }
 
 .inputWithAction gmp-place-autocomplete {
-  flex: 1;
-  min-width: 0;
+  display: block;
+  width: 100%;
+  background: transparent;
+  outline: none;
 }
 
 .inputWithAction gmp-place-autocomplete::part(input) {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg);
+  border: none;
+  background: transparent;
   color: var(--text);
   outline: none;
+  box-shadow: none;
   font-size: inherit;
   font-family: inherit;
   box-sizing: border-box;
 }
 
 .inputWithAction gmp-place-autocomplete::part(input):focus {
-  border-color: var(--accent);
+  outline: none;
+  box-shadow: none;
 }
 
 .btnLocate {

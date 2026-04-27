@@ -1,30 +1,58 @@
 .locationSearch {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  height: 34px;
   margin-left: auto;
   margin-right: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #0a2443;
+  transition: border-color 0.15s;
+}
+
+.locationSearch:focus-within {
+  border-color: var(--accent);
 }
 
 .locationSearchInput {
-  display: contents;
+  position: relative;
+  isolation: isolate;
+  width: 240px;
+  height: 100%;
+}
+
+.locationSearchInput::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000003; /* beats gmp-place-autocomplete's internal focus-ring (z-index: 1000002) */
+  box-shadow: inset 0 0 0 4px #0a2443; /* solid cover for focus-ring border */
 }
 
 .locationSearch gmp-place-autocomplete {
-  width: 240px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+  outline: none;
+  border: none;
 }
 
 .locationSearch gmp-place-autocomplete::part(input) {
   width: 100%;
+  height: 100%;
+  min-height: 0;
   padding: 6px 30px 6px 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.25);
+  border: none;
+  background: transparent;
   color: var(--text);
   outline: none;
+  box-shadow: none;
   font-size: 13px;
   font-family: inherit;
-  transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
 }
 
@@ -33,30 +61,27 @@
 }
 
 .locationSearch gmp-place-autocomplete::part(input):focus {
-  border-color: var(--accent);
-  background: rgba(0, 0, 0, 0.35);
+  outline: none;
+  box-shadow: none;
 }
 
 .locationSearchLocate {
-  position: absolute;
-  right: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  flex-shrink: 0;
   padding: 0;
   border: none;
-  border-radius: 3px;
+  border-radius: 0 3px 3px 0;
   background: transparent;
   color: var(--text-muted);
+  cursor: pointer;
   transition: color 0.15s, background 0.15s;
-  z-index: 1;
 }
 
 .locationSearchLocate:hover {
   color: var(--accent);
-  background: rgba(255, 255, 255, 0.06);
 }
 
 @media (max-width: 768px) {
@@ -69,7 +94,8 @@
     padding-bottom: 6px;
   }
 
-  .locationSearch gmp-place-autocomplete {
-    width: 100%;
+  .locationSearchInput {
+    flex: 1;
+    width: auto;
   }
 }
