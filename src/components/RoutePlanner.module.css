@@ -54,7 +54,8 @@
   gap: 6px;
 }
 
-.stopRowPicking .inputWithAction gmp-place-autocomplete::part(input) {
+/* Picking state targets our container, not the shadow input */
+.stopRowPicking .stopInputContainer {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
@@ -119,22 +120,35 @@
   min-width: 0;
 }
 
-/* Container div is transparent — gmp-place-autocomplete becomes a flex child */
+/* Our container provides the visible border + background.
+   gmp-place-autocomplete and its shadow DOM are made transparent. */
 .stopInputContainer {
-  display: contents;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.stopInputContainer:focus-within {
+  border-color: var(--accent);
 }
 
 .inputWithAction gmp-place-autocomplete {
-  flex: 1;
-  min-width: 0;
+  display: block;
+  width: 100%;
+  background: transparent;
+  /* Attempt to clear Google's Material surface token */
+  --gmp-color-surface: transparent;
 }
 
 .inputWithAction gmp-place-autocomplete::part(input) {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg);
+  border: none;
+  background: transparent;
   color: var(--text);
   outline: none;
   font-size: inherit;
@@ -143,7 +157,8 @@
 }
 
 .inputWithAction gmp-place-autocomplete::part(input):focus {
-  border-color: var(--accent);
+  outline: none;
+  box-shadow: none;
 }
 
 .btnLocate {

@@ -10,8 +10,12 @@
   display: contents;
 }
 
+/* Host element: transparent so our ::part(input) provides all the chrome */
 .locationSearch gmp-place-autocomplete {
   width: 240px;
+  display: block;
+  background: transparent;
+  --gmp-color-surface: transparent;
 }
 
 .locationSearch gmp-place-autocomplete::part(input) {
@@ -35,6 +39,8 @@
 .locationSearch gmp-place-autocomplete::part(input):focus {
   border-color: var(--accent);
   background: rgba(0, 0, 0, 0.35);
+  outline: none;
+  box-shadow: none;
 }
 
 .locationSearchLocate {
