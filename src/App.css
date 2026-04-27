@@ -9,11 +9,9 @@
   border-bottom: 1px solid var(--border);
 }
 
-.app-header h1 {
-  font-size: 18px;
-  font-weight: 600;
+.app-logo {
   color: var(--text);
-  margin: 0;
+  flex-shrink: 0;
 }
 
 .app-main {
@@ -32,6 +30,12 @@
   background: var(--border);
   transition: background 0.15s;
   flex-shrink: 0;
+}
+
+.resize-handle--vertical {
+  width: 100%;
+  height: 5px;
+  cursor: row-resize;
 }
 
 .resize-handle:hover {
@@ -83,7 +87,7 @@
   color: var(--text);
 }
 
-.header-toggles {
+.header-controls {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -150,6 +154,7 @@
   color: var(--text-muted);
   transition: transform 0.25s ease;
   flex-shrink: 0;
+  margin-right: 4px;
 }
 
 .panel-section__chevron--open {
@@ -249,7 +254,7 @@
 .stop-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .stop-row {
@@ -264,12 +269,12 @@
 }
 
 .stop-badge {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--accent);
   color: white;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -319,6 +324,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .input-with-action input {
@@ -408,6 +415,8 @@
 }
 
 .route-planner input {
+  flex: 1;
+  min-width: 0;
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -447,7 +456,7 @@
 }
 
 .route-planner .btn-secondary {
-  padding: 8px 12px;
+  padding: 8px 20px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg-panel);
@@ -577,6 +586,8 @@
   position: relative;
   display: flex;
   align-items: center;
+  margin-left: auto;
+  margin-right: 12px;
 }
 
 .location-search-icon {
@@ -827,18 +838,47 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  /* Header: two-row layout */
+  .app-header {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .header-controls {
+    order: 2;
+    flex: 1;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .location-search {
+    order: 3;
+    margin-left: 0;
+    margin-right: 0;
+    flex-basis: 100%;
+    min-width: 0;
+    padding-bottom: 6px;
+  }
+
+  .location-search input {
+    width: 100%;
+  }
+
+  /* Route planner panel */
+  .panel-section {
+    padding: 20px;
+  }
+
+  /* Main: stacked layout */
   .app-main {
     flex-direction: column;
   }
 
-  .map-container {
-    flex: none;
-    height: 50vh;
-  }
-
   .side-panel {
     flex: 1;
-    min-width: unset;
-    max-width: unset;
+    width: 100% !important;
   }
 }

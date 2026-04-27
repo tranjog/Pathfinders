@@ -11,7 +11,7 @@ import StreetViewPanel from '@components/StreetViewPanel';
 import MovementControls from '@components/MovementControls';
 import ApiKeyDialog from '@components/ApiKeyDialog';
 import LocationSearch, { type SearchTarget } from '@components/LocationSearch';
-import { SettingsIcon } from '@assets';
+import { AppLogoIcon, SettingsIcon } from '@assets';
 import { useOverpassPaths } from '@hooks/useOverpassPaths';
 import { useStreetViewCoverage } from '@hooks/useStreetViewCoverage';
 import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
@@ -108,7 +108,16 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     return () => { delete document.documentElement.dataset.activity; };
   }, [activity]);
 
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const isStacked = windowWidth < 768;
+
   const [sideWidth, setSideWidth] = useState(() => Math.round(window.innerWidth * 0.35));
+  const [mapHeight, setMapHeight] = useState(() => Math.round((window.innerHeight - 48) * 0.5));
   const dragging = useRef(false);
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -116,14 +125,19 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     const onMouseMove = (e: MouseEvent) => {
       if (!dragging.current || !mainRef.current) return;
       const rect = mainRef.current.getBoundingClientRect();
-      const newSideWidth = rect.right - e.clientX;
-      setSideWidth(Math.max(280, Math.min(newSideWidth, rect.width - 300)));
+      if (isStacked) {
+        const newMapHeight = e.clientY - rect.top;
+        setMapHeight(Math.max(200, Math.min(newMapHeight, rect.height - 200)));
+      } else {
+        const newSideWidth = rect.right - e.clientX;
+        setSideWidth(Math.max(280, Math.min(newSideWidth, rect.width - 300)));
+      }
     };
     const onMouseUp = () => { dragging.current = false; document.body.style.cursor = ''; };
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     return () => { window.removeEventListener('mousemove', onMouseMove); window.removeEventListener('mouseup', onMouseUp); };
-  }, []);
+  }, [isStacked]);
 
   const isBrowse = mode === APP_MODE.BROWSE;
   const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassPaths(isBrowse);
@@ -174,9 +188,9 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   return (
     <>
       <header className="app-header">
-        <h1>{config.appTitle}</h1>
-        <div className="header-toggles">
-          <LocationSearch onSelect={setSearchTarget} />
+        <AppLogoIcon className="app-logo" />
+        <LocationSearch onSelect={setSearchTarget} />
+        <div className="header-controls">
           <ActivityToggle onChange={handleActivityChange} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
@@ -192,7 +206,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
         </div>
       </header>
       <main className="app-main" ref={mainRef}>
-        <div className="map-container" style={{ flex: 1, minWidth: 300 }}>
+        <div className="map-container" style={isStacked ? { flex: 'none', height: mapHeight } : { flex: 1, minWidth: 300 }}>
           <MapView searchTarget={searchTarget} isRouteMode={!isBrowse}>
             {isBrowse && (
               <CoverageOverlay
@@ -204,10 +218,10 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
           </MapView>
         </div>
         <div
-          className="resize-handle"
-          onMouseDown={() => { dragging.current = true; document.body.style.cursor = 'col-resize'; }}
+          className={`resize-handle${isStacked ? ' resize-handle--vertical' : ''}`}
+          onMouseDown={() => { dragging.current = true; document.body.style.cursor = isStacked ? 'row-resize' : 'col-resize'; }}
         />
-        <div className="side-panel" style={{ width: sideWidth, flex: 'none' }}>
+        <div className="side-panel" style={isStacked ? {} : { width: sideWidth, flex: 'none' }}>
           {isBrowse ? (
             <>
               <BrowseSidebar
