@@ -130,7 +130,7 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
       <div className={`${styles.sectionBody}${open ? '' : ` ${styles.sectionBodyCollapsed}`}`}>
         <div className={styles.routePlanner}>
           <div className={styles.stopList}>
-            {stops.map((stop, i) => {
+            {stops.map((_stop, i) => {
               const isFirst = i === 0;
               const isLast = i === stops.length - 1;
               const isPicking = mapPickMode === i;

@@ -173,7 +173,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     resetMapSession();
     clearRoute();
     resetPlayback([], false);
-  }, [resetMapSession, clearRoute, resetPlayback]);
+  }, [setActivity, resetMapSession, clearRoute, resetPlayback]);
 
   const isMoving = moverPoints.length > 0;
   const effectivePosition = isMoving ? moverPoints[moverIndex] : streetViewPosition;
