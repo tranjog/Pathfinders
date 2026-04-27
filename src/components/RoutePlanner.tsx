@@ -106,7 +106,7 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
         <h3>Route Planner</h3>
         <svg
           className={`panel-section__chevron${open ? ' panel-section__chevron--open' : ''}`}
-          width="18" height="10" viewBox="0 0 18 10"
+          width="16" height="8" viewBox="0 0 18 10"
           fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
         >
           <polyline points="1,1 9,9 17,1" />
