@@ -10,17 +10,11 @@
   display: contents;
 }
 
-/* Host element: transparent + suppress all focus chrome */
 .locationSearch gmp-place-autocomplete {
   width: 240px;
   display: block;
   background: transparent;
   outline: none;
-  /* Attempt to suppress Google's internal focus ring via Material tokens */
-  --gmp-color-surface: transparent;
-  --gmp-color-primary: transparent;
-  --gmp-input-border-color: transparent;
-  --gmp-input-active-border-color: transparent;
 }
 
 .locationSearch gmp-place-autocomplete::part(input) {
@@ -34,6 +28,7 @@
   box-shadow: none;
   font-size: 13px;
   font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
 }
 
@@ -42,6 +37,8 @@
 }
 
 .locationSearch gmp-place-autocomplete::part(input):focus {
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.35);
   outline: none;
   box-shadow: none;
 }

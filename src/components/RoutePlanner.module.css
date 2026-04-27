@@ -129,6 +129,11 @@
   border-radius: 4px;
   background: var(--bg);
   overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.stopInputContainer:focus-within {
+  border-color: var(--accent);
 }
 
 .inputWithAction gmp-place-autocomplete {
@@ -136,11 +141,6 @@
   width: 100%;
   background: transparent;
   outline: none;
-  /* Attempt to suppress Google's internal focus ring via Material tokens */
-  --gmp-color-surface: transparent;
-  --gmp-color-primary: transparent;
-  --gmp-input-border-color: transparent;
-  --gmp-input-active-border-color: transparent;
 }
 
 .inputWithAction gmp-place-autocomplete::part(input) {

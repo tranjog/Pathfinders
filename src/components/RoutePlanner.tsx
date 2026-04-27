@@ -4,6 +4,7 @@ import type { LatLng } from '@types';
 import { LocateIcon, MapPinIcon } from '@assets';
 import { useRoutePlannerStore, MAX_STOPS } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
+import { suppressAutocompleteShadowChrome } from '@utils/maps';
 import styles from './RoutePlanner.module.css';
 
 interface RoutePlannerProps {
@@ -39,6 +40,7 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
     const element = new placesLib.PlaceAutocompleteElement({});
     container.appendChild(element);
     elementRefs.current[index] = element;
+    suppressAutocompleteShadowChrome(element);
 
     element.addEventListener('gmp-select', async (event) => {
       const prediction = (event as google.maps.places.PlacePredictionSelectEvent).placePrediction;

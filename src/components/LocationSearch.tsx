@@ -3,6 +3,7 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '@types';
 import { LocateIcon } from '@assets';
 import { isMac, isTauri } from '@utils/platform';
+import { suppressAutocompleteShadowChrome } from '@utils/maps';
 import { useUserLocationStore } from '@store/userLocationStore';
 import styles from './LocationSearch.module.css';
 
@@ -48,6 +49,7 @@ export default function LocationSearch({ onSelect }: Props) {
     const element = new placesLib.PlaceAutocompleteElement({});
     containerRef.current.appendChild(element);
     elementRef.current = element;
+    suppressAutocompleteShadowChrome(element);
 
     element.addEventListener('gmp-select', async (event) => {
       const prediction = (event as google.maps.places.PlacePredictionSelectEvent).placePrediction;
