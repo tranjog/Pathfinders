@@ -54,8 +54,8 @@
   gap: 6px;
 }
 
-/* Picking state targets our container, not the shadow input */
-.stopRowPicking .stopInputContainer {
+/* Picking state targets our container's ::after overlay */
+.stopRowPicking .stopInputContainer::after {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
@@ -121,18 +121,30 @@
 }
 
 /* Our container provides the visible border + background.
-   gmp-place-autocomplete and its shadow DOM are made transparent. */
+   gmp-place-autocomplete and its shadow DOM are made transparent.
+   ::after overlay sits above Google's focus-ring (z-index:1000002). */
 .stopInputContainer {
+  position: relative;
+  isolation: isolate;
   flex: 1;
   min-width: 0;
-  border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg);
   overflow: hidden;
+}
+
+.stopInputContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000003;
   transition: border-color 0.15s;
 }
 
-.stopInputContainer:focus-within {
+.stopInputContainer:focus-within::after {
   border-color: var(--accent);
 }
 

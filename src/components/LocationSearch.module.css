@@ -11,24 +11,42 @@
 }
 
 .locationSearch gmp-place-autocomplete {
+  position: relative;    /* needed for ::after */
+  isolation: isolate;    /* new stacking context so z-index beats shadow DOM */
   width: 240px;
   display: block;
   background: transparent;
   outline: none;
 }
 
+/* Our border overlay sits above Google's focus-ring div (z-index:1000002).
+   Covers the unfocused black border and the focused blue ring. */
+.locationSearch gmp-place-autocomplete::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000003;
+  transition: border-color 0.15s;
+}
+
+.locationSearch gmp-place-autocomplete:focus-within::after {
+  border-color: var(--accent);
+}
+
+/* Input: border handled by ::after above */
 .locationSearch gmp-place-autocomplete::part(input) {
   width: 100%;
   padding: 6px 30px 6px 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: none;
   background: rgba(0, 0, 0, 0.25);
   color: var(--text);
   outline: none;
   box-shadow: none;
   font-size: 13px;
   font-family: inherit;
-  transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
 }
 
@@ -37,8 +55,6 @@
 }
 
 .locationSearch gmp-place-autocomplete::part(input):focus {
-  border-color: var(--accent);
-  background: rgba(0, 0, 0, 0.35);
   outline: none;
   box-shadow: none;
 }
@@ -57,7 +73,7 @@
   background: transparent;
   color: var(--text-muted);
   transition: color 0.15s, background 0.15s;
-  z-index: 1;
+  z-index: 1000004;  /* above our own ::after */
 }
 
 .locationSearchLocate:hover {
