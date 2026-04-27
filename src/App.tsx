@@ -7,6 +7,8 @@ import CoverageOverlay from '@components/CoverageOverlay';
 import RouteOverlay from '@components/RouteOverlay';
 import BrowseSidebar from '@components/BrowseSidebar';
 import RoutePlanner from '@components/RoutePlanner';
+import SavedRoutes from '@components/SavedRoutes';
+import SaveRouteAction from '@components/SaveRouteAction';
 import StreetViewPanel from '@components/StreetViewPanel';
 import MovementControls from '@components/MovementControls';
 import ApiKeyDialog from '@components/ApiKeyDialog';
@@ -17,13 +19,14 @@ import { useStreetViewCoverage } from '@hooks/useStreetViewCoverage';
 import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { useDirectionsStore } from '@store/directionsStore';
 import { useActivityStore } from '@store/activityStore';
+import { useRoutePlannerStore } from '@store/routePlannerStore';
 import { useApiKey } from '@hooks/useApiKey';
 import { useMapSession } from '@hooks/useMapSession';
 import { markEnvKeyDenied } from '@services/apiKey';
 import { samplePointsAlongPath } from '@services/geometry';
 import { SV_SAMPLE_INTERVAL_METERS, APP_MODE } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
-import type { AppMode, ActivityType, LatLng, PathSegment } from '@types';
+import type { AppMode, ActivityType, LatLng, PathSegment, SavedRoute } from '@types';
 import styles from './App.module.css';
 
 declare global {
@@ -99,6 +102,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const [mode, setMode] = useState<AppMode>(APP_MODE.ROUTE);
   const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
   const [plannerOpen, setPlannerOpen] = useState(true);
+  const [savedOpen, setSavedOpen] = useState(true);
+  const setStops = useRoutePlannerStore((s) => s.setStops);
 
   const config = ACTIVITY_CONFIGS[activity];
 
@@ -142,8 +147,9 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const isBrowse = mode === APP_MODE.BROWSE;
   const { segments: rawSegments, loading, error, tooZoomedOut } = useOverpassPaths(isBrowse);
   const { checkSegmentCoverage, checking, progress } = useStreetViewCoverage();
-  const { routes, selectedIndex, loading: routeLoading, error: routeError, getRoute, selectRoute, clearRoute } = useDirectionsStore();
+  const { routes, selectedIndex, loading: routeLoading, error: routeError, getRoute, setSavedRoute, selectRoute, clearRoute } = useDirectionsStore();
   const route = routes[selectedIndex] ?? null;
+  const stops = useRoutePlannerStore((s) => s.stops);
   const { points: moverPoints, currentIndex: moverIndex, heading: moverHeading, reset: resetPlayback } = useStreetViewPlaybackStore();
   const {
     segments,
@@ -183,6 +189,20 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
       getRoute(stops, config.travelModeKey);
     },
     [getRoute, config.travelModeKey]
+  );
+
+  const handleLoadSavedRoute = useCallback(
+    (saved: SavedRoute) => {
+      if (saved.activity !== activity) {
+        setActivity(saved.activity);
+        resetMapSession();
+      }
+      resetPlayback([], false);
+      setStops(saved.stops);
+      setSavedRoute(saved.route);
+      setPlannerOpen(false);
+    },
+    [activity, setActivity, resetMapSession, resetPlayback, setStops, setSavedRoute]
   );
 
   return (
@@ -250,6 +270,11 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 open={plannerOpen}
                 onToggle={() => setPlannerOpen((v) => !v)}
               />
+              <SavedRoutes
+                open={savedOpen}
+                onToggle={() => setSavedOpen((v) => !v)}
+                onLoad={handleLoadSavedRoute}
+              />
               {routeError && (
                 <div className="panel-message" style={{ color: 'var(--red)' }}>
                   {routeError}
@@ -279,6 +304,9 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                   >
                     {config.actionVerb} this route
                   </button>
+                  {route && (
+                    <SaveRouteAction route={route} stops={stops} activity={activity} />
+                  )}
                 </div>
               )}
               <StreetViewPanel

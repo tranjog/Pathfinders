@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { LatLng, RouteData, TravelModeKey } from '@types';
+import type { LatLng, RouteData, SavedRouteData, TravelModeKey } from '@types';
 import { getRoutes as getDirectionRoutes } from '@services/directions';
 
 interface DirectionsState {
@@ -8,6 +8,7 @@ interface DirectionsState {
   loading: boolean;
   error: string | null;
   getRoute: (stops: LatLng[], travelModeKey: TravelModeKey) => Promise<void>;
+  setSavedRoute: (route: SavedRouteData) => void;
   selectRoute: (index: number) => void;
   clearRoute: () => void;
 }
@@ -31,6 +32,23 @@ export const useDirectionsStore = create<DirectionsState>((set) => ({
         loading: false,
       });
     }
+  },
+
+  setSavedRoute(route) {
+    set({
+      routes: [
+        {
+          polyline: route.polyline,
+          sampledPoints: route.sampledPoints,
+          distance: route.distance,
+          duration: route.duration,
+          coverageMap: new Map(),
+        },
+      ],
+      selectedIndex: 0,
+      loading: false,
+      error: null,
+    });
   },
 
   selectRoute(index) {

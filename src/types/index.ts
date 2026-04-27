@@ -39,6 +39,22 @@ export interface MoverState {
 
 export type TravelModeKey = typeof TRAVEL_MODE[keyof typeof TRAVEL_MODE];
 
+export interface SavedRouteData {
+  polyline: LatLng[];
+  sampledPoints: LatLng[];
+  distance: string;
+  duration: string;
+}
+
+export interface SavedRoute {
+  id: string;
+  name: string;
+  activity: ActivityType;
+  stops: Stop[];
+  route: SavedRouteData;
+  createdAt: number;
+}
+
 export interface ActivityConfig {
   appTitle: string;
   pathNounPlural: string;
