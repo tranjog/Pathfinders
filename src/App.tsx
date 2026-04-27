@@ -191,6 +191,12 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     [getRoute, config.travelModeKey]
   );
 
+  const handleClearRoute = useCallback(() => {
+    clearRoute();
+    resetMapSession();
+    resetPlayback([], false);
+  }, [clearRoute, resetMapSession, resetPlayback]);
+
   const handleLoadSavedRoute = useCallback(
     (saved: SavedRoute) => {
       if (saved.activity !== activity) {
@@ -265,7 +271,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
             <>
               <RoutePlanner
                 onRoute={handleRouteReady}
-                onClear={clearRoute}
+                onClear={handleClearRoute}
                 loading={routeLoading}
                 open={plannerOpen}
                 onToggle={() => setPlannerOpen((v) => !v)}
