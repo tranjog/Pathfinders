@@ -1,7 +1,13 @@
 export function createAutocompleteElement(
   placesLib: google.maps.PlacesLibrary,
 ): google.maps.places.PlaceAutocompleteElement {
-  return new placesLib.PlaceAutocompleteElement({});
+  // `PlaceAutocompleteElement` is exposed at runtime by the Places library, but
+  // is missing from the `PlacesLibrary` interface in the current
+  // `@types/google.maps`. Access it via a typed cast.
+  const lib = placesLib as google.maps.PlacesLibrary & {
+    PlaceAutocompleteElement: typeof google.maps.places.PlaceAutocompleteElement;
+  };
+  return new lib.PlaceAutocompleteElement({});
 }
 
 /**

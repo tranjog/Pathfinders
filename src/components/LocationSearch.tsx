@@ -46,9 +46,10 @@ export default function LocationSearch({ onSelect }: Props) {
   useEffect(() => {
     if (!placesLib || !containerRef.current || elementRef.current) return;
 
+    const container = containerRef.current;
     const element = createAutocompleteElement(placesLib);
     elementRef.current = element;
-    containerRef.current.appendChild(element);
+    container.appendChild(element);
 
     element.addEventListener('gmp-select', async (event) => {
       const prediction = (event as google.maps.places.PlacePredictionSelectEvent).placePrediction;
@@ -64,8 +65,8 @@ export default function LocationSearch({ onSelect }: Props) {
     });
 
     return () => {
-      if (containerRef.current && elementRef.current) {
-        containerRef.current.removeChild(elementRef.current);
+      if (container.contains(element)) {
+        container.removeChild(element);
       }
       elementRef.current = null;
     };
