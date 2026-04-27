@@ -120,9 +120,6 @@
   min-width: 0;
 }
 
-/* Our container provides the visible border + background.
-   gmp-place-autocomplete and its shadow DOM are made transparent.
-   ::after overlay sits above Google's focus-ring (z-index:1000002). */
 .stopInputContainer {
   position: relative;
   isolation: isolate;
@@ -140,7 +137,8 @@
   border: 1px solid var(--border);
   border-radius: 4px;
   pointer-events: none;
-  z-index: 1000003;
+  z-index: 1000003; /* beats gmp-place-autocomplete's internal focus-ring (z-index: 1000002) */
+  box-shadow: inset 0 0 0 4px var(--bg); /* paints over focus-ring border */
   transition: border-color 0.15s;
 }
 
