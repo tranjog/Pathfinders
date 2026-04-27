@@ -6,30 +6,33 @@
   margin-right: 12px;
 }
 
-.locationSearchIcon {
-  position: absolute;
-  left: 8px;
-  color: var(--text-muted);
-  pointer-events: none;
+.locationSearchInput {
+  display: contents;
 }
 
-.locationSearch input {
+.locationSearch gmp-place-autocomplete {
   width: 240px;
-  padding: 6px 30px 6px 28px;
+}
+
+.locationSearch gmp-place-autocomplete::part(input) {
+  width: 100%;
+  padding: 6px 30px 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.25);
   color: var(--text);
   outline: none;
   font-size: 13px;
+  font-family: inherit;
   transition: border-color 0.15s, background 0.15s;
+  box-sizing: border-box;
 }
 
-.locationSearch input::placeholder {
+.locationSearch gmp-place-autocomplete::part(input)::placeholder {
   color: var(--text-muted);
 }
 
-.locationSearch input:focus {
+.locationSearch gmp-place-autocomplete::part(input):focus {
   border-color: var(--accent);
   background: rgba(0, 0, 0, 0.35);
 }
@@ -48,6 +51,7 @@
   background: transparent;
   color: var(--text-muted);
   transition: color 0.15s, background 0.15s;
+  z-index: 1;
 }
 
 .locationSearchLocate:hover {
@@ -65,7 +69,7 @@
     padding-bottom: 6px;
   }
 
-  .locationSearch input {
+  .locationSearch gmp-place-autocomplete {
     width: 100%;
   }
 }

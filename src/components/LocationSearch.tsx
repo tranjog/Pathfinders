@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '@types';
-import { SearchIcon, LocateIcon } from '@assets';
+import { LocateIcon } from '@assets';
 import { isMac, isTauri } from '@utils/platform';
 import { useUserLocationStore } from '@store/userLocationStore';
 import styles from './LocationSearch.module.css';
@@ -20,6 +20,12 @@ export default function LocationSearch({ onSelect }: Props) {
   const [locating, setLocating] = useState(false);
   const [showError, setShowError] = useState(false);
 
+  const placesLib = useMapsLibrary('places');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<google.maps.places.PlaceAutocompleteElement | null>(null);
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+
   const handleLocate = async () => {
     let loc = userLocation ?? null;
     if (!loc) {
@@ -31,42 +37,42 @@ export default function LocationSearch({ onSelect }: Props) {
       return;
     }
     onSelect({ center: loc });
-    if (inputRef.current) inputRef.current.value = 'My Location';
-    inputRef.current?.blur();
+    const shadowInput = elementRef.current?.shadowRoot?.querySelector('input');
+    if (shadowInput) shadowInput.value = 'My Location';
+    elementRef.current?.blur();
   };
-  const placesLib = useMapsLibrary('places');
-  const inputRef = useRef<HTMLInputElement>(null);
-  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   useEffect(() => {
-    if (!placesLib || !inputRef.current || autoRef.current) return;
-    autoRef.current = new placesLib.Autocomplete(inputRef.current, {
-      fields: ['geometry', 'name', 'formatted_address'],
-    });
-    autoRef.current.addListener('place_changed', () => {
-      const place = autoRef.current?.getPlace();
-      const loc = place?.geometry?.location;
+    if (!placesLib || !containerRef.current || elementRef.current) return;
+
+    const element = new placesLib.PlaceAutocompleteElement({});
+    containerRef.current.appendChild(element);
+    elementRef.current = element;
+
+    element.addEventListener('gmp-select', async (event) => {
+      const prediction = (event as google.maps.places.PlacePredictionSelectEvent).placePrediction;
+      const place = prediction.toPlace();
+      await place.fetchFields({ fields: ['location', 'viewport', 'displayName', 'formattedAddress'] });
+      const loc = place.location;
       if (!loc) return;
       const center = { lat: loc.lat(), lng: loc.lng() };
-      const viewport = place?.geometry?.viewport;
-      onSelect({
+      onSelectRef.current({
         center,
-        bounds: viewport ? viewport.toJSON() : undefined,
+        bounds: place.viewport ? place.viewport.toJSON() : undefined,
       });
-      if (inputRef.current) inputRef.current.value = place?.name ?? place?.formatted_address ?? '';
-      inputRef.current?.blur();
     });
-  }, [placesLib, onSelect]);
+
+    return () => {
+      if (containerRef.current && elementRef.current) {
+        containerRef.current.removeChild(elementRef.current);
+      }
+      elementRef.current = null;
+    };
+  }, [placesLib]);
 
   return (
     <div className={styles.locationSearch}>
-      <SearchIcon className={styles.locationSearchIcon} />
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Search location"
-        spellCheck={false}
-      />
+      <div ref={containerRef} className={styles.locationSearchInput} />
       <button
         type="button"
         className={styles.locationSearchLocate}
