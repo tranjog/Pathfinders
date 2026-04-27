@@ -68,7 +68,7 @@ export default function MapView({ children, searchTarget, isRouteMode = false }:
         defaultZoom={DEFAULT_ZOOM}
         gestureHandling="greedy"
         disableDefaultUI={false}
-        mapId="cyclable-view-map"
+        mapId="route-planner-view-map"
         draggableCursor={mapPickMode !== null ? 'crosshair' : undefined}
         onClick={handleMapClick}
       >

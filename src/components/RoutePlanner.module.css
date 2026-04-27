@@ -54,7 +54,7 @@
   gap: 6px;
 }
 
-.stopRowPicking .inputWithAction input {
+.stopRowPicking .inputWithAction gmp-place-autocomplete::part(input) {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
@@ -119,18 +119,30 @@
   min-width: 0;
 }
 
-.inputWithAction input {
+/* Container div is transparent — gmp-place-autocomplete becomes a flex child */
+.stopInputContainer {
+  display: contents;
+}
+
+.inputWithAction gmp-place-autocomplete {
   flex: 1;
   min-width: 0;
+}
+
+.inputWithAction gmp-place-autocomplete::part(input) {
+  width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg);
   color: var(--text);
   outline: none;
+  font-size: inherit;
+  font-family: inherit;
+  box-sizing: border-box;
 }
 
-.inputWithAction input:focus {
+.inputWithAction gmp-place-autocomplete::part(input):focus {
   border-color: var(--accent);
 }
 
