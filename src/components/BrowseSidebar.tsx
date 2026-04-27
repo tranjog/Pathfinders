@@ -1,4 +1,5 @@
 import type { PathSegment, LatLng, ActivityConfig } from '@types';
+import styles from './BrowseSidebar.module.css';
 
 interface BrowseSidebarProps {
   loading: boolean;
@@ -54,14 +55,14 @@ export default function BrowseSidebar({
   return (
     <div className="panel-section">
       <h3>{config.pathNounPlural}</h3>
-      <div className="coverage-stats">
-        <span className="stat">
-          <span className="dot gray" /> {segmentCount} paths found
+      <div className={styles.coverageStats}>
+        <span className={styles.stat}>
+          <span className={`${styles.dot} ${styles.gray}`} /> {segmentCount} paths found
         </span>
       </div>
 
       {selectedSegment ? (
-        <div className="segment-info">
+        <div className={styles.segmentInfo}>
           <h4>{selectedSegment.name || `Path #${selectedSegment.id}`}</h4>
           {checking ? (
             <div className="loading-spinner">
@@ -69,15 +70,15 @@ export default function BrowseSidebar({
             </div>
           ) : selectedSegment.coverageChecked ? (
             <>
-              <div className="coverage-stats" style={{ marginTop: 8 }}>
-                <span className="stat">
-                  <span className="dot green" />
+              <div className={styles.coverageStats} style={{ marginTop: 8 }}>
+                <span className={styles.stat}>
+                  <span className={`${styles.dot} ${styles.green}`} />
                   {Math.round((selectedSegment.coverageRatio ?? 0) * 100)}% coverage
                 </span>
               </div>
               {(selectedSegment.coverageRatio ?? 0) > 0 && onStartMovement && (
                 <button
-                  className="btn-start"
+                  className={styles.btnStart}
                   onClick={() => onStartMovement(selectedSegment.points)}
                 >
                   {config.actionVerb} this path

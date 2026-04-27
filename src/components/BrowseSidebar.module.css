@@ -1,0 +1,52 @@
+.coverageStats {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.green { background: var(--green); }
+.red { background: var(--red); }
+.gray { background: var(--gray); }
+
+.segmentInfo {
+  padding: 16px;
+}
+
+.segmentInfo h4 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.btnStart {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--green);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btnStart:hover {
+  opacity: 0.9;
+}
+
+.btnStart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

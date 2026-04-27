@@ -36,7 +36,7 @@ function clearTimer() {
   }
 }
 
-function startTimer(getState: () => StreetViewPlaybackState, setState: (fn: (s: StreetViewPlaybackState) => Partial<StreetViewPlaybackState>) => void) {
+function startTimer(_getState: () => StreetViewPlaybackState, setState: (fn: (s: StreetViewPlaybackState) => Partial<StreetViewPlaybackState>) => void) {
   clearTimer();
   intervalId = setInterval(() => {
     setState((prev) => {

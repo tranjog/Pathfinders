@@ -4,6 +4,7 @@ import type { LatLng } from '@types';
 import { LocateIcon, MapPinIcon } from '@assets';
 import { useRoutePlannerStore, MAX_STOPS } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
+import styles from './RoutePlanner.module.css';
 
 interface RoutePlannerProps {
   onRoute: (stops: LatLng[]) => void;
@@ -102,19 +103,19 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
 
   return (
     <div className="panel-section">
-      <div className="panel-section__header" onClick={onToggle}>
+      <div className={styles.sectionHeader} onClick={onToggle}>
         <h3>Route Planner</h3>
         <svg
-          className={`panel-section__chevron${open ? ' panel-section__chevron--open' : ''}`}
+          className={`${styles.chevron}${open ? ` ${styles.chevronOpen}` : ''}`}
           width="16" height="8" viewBox="0 0 18 10"
           fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
         >
           <polyline points="1,1 9,9 17,1" />
         </svg>
       </div>
-      <div className={`panel-section__body${open ? '' : ' panel-section__body--collapsed'}`}>
-      <div className="route-planner">
-        <div className="stop-list">
+      <div className={`${styles.sectionBody}${open ? '' : ` ${styles.sectionBodyCollapsed}`}`}>
+      <div className={styles.routePlanner}>
+        <div className={styles.stopList}>
           {stops.map((stop, i) => {
             const isFirst = i === 0;
             const isLast = i === stops.length - 1;
@@ -122,9 +123,9 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
             const isIntermediate = !isFirst && !isLast;
 
             return (
-              <div key={i} className={`stop-row${isPicking ? ' stop-row--picking' : ''}`}>
-                <span className="stop-badge">{isFirst ? 'A' : isLast ? String.fromCharCode(65 + stops.length - 1) : String.fromCharCode(65 + i)}</span>
-                <div className="input-with-action">
+              <div key={i} className={`${styles.stopRow}${isPicking ? ` ${styles.stopRowPicking}` : ''}`}>
+                <span className={styles.stopBadge}>{isFirst ? 'A' : isLast ? String.fromCharCode(65 + stops.length - 1) : String.fromCharCode(65 + i)}</span>
+                <div className={styles.inputWithAction}>
                   <input
                     ref={(el) => { inputRefs.current[i] = el; }}
                     type="text"
@@ -132,20 +133,20 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
                     onFocus={() => { if (stop.latLng && inputRefs.current[i]) inputRefs.current[i]!.value = stop.label; }}
                   />
                   <button
-                    className={`btn-locate${isPicking ? ' btn-locate--active' : ''}`}
+                    className={`${styles.btnLocate}${isPicking ? ` ${styles.btnLocateActive}` : ''}`}
                     title="Pick on map"
                     onClick={() => togglePickMode(i)}
                   >
                     <MapPinIcon />
                   </button>
                   {userLocation && (
-                    <button className="btn-locate" title="Use my location" onClick={() => handleUseMyLocation(i)}>
+                    <button className={styles.btnLocate} title="Use my location" onClick={() => handleUseMyLocation(i)}>
                       <LocateIcon />
                     </button>
                   )}
                 </div>
                 {isIntermediate && (
-                  <button className="btn-remove-stop" title="Remove stop" onClick={() => handleRemoveStop(i)}>
+                  <button className={styles.btnRemoveStop} title="Remove stop" onClick={() => handleRemoveStop(i)}>
                     ×
                   </button>
                 )}
@@ -155,20 +156,20 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
         </div>
 
         {stops.length < MAX_STOPS && (
-          <button className="btn-add-stop" onClick={handleAddStop}>
+          <button className={styles.btnAddStop} onClick={handleAddStop}>
             + Add stop
           </button>
         )}
 
         {pickingLabel && (
-          <p className="pick-hint">Click on the map to set {pickingLabel}</p>
+          <p className={styles.pickHint}>Click on the map to set {pickingLabel}</p>
         )}
 
-        <div className="route-actions">
+        <div className={styles.routeActions}>
           <button className="btn-go" onClick={handleGo} disabled={!allFilled || loading}>
             {loading ? 'Finding routes...' : 'Find Routes'}
           </button>
-          <button className="btn-secondary" onClick={handleClear}>Clear</button>
+          <button className={styles.clearBtn} onClick={handleClear}>Clear</button>
         </div>
       </div>
       </div>

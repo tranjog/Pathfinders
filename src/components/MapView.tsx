@@ -1,11 +1,13 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Map, useMap, useMapsLibrary, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps';
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@constants';
+import type { LatLng } from '@types';
 import type { SearchTarget } from './LocationSearch';
 import { useRoutePlannerStore } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
 import { reverseGeocode } from '@services/geocoder';
 import PlaybackMarker from './PlaybackMarker';
+import styles from './MapView.module.css';
 
 interface MapViewProps {
   children?: React.ReactNode;
@@ -75,14 +77,14 @@ export default function MapView({ children, searchTarget, isRouteMode = false }:
         {isRouteMode && stops.map((stop, i) =>
           stop.latLng ? (
             <AdvancedMarker key={i} position={stop.latLng}>
-              <div className={`route-marker route-marker--${i === 0 ? 'origin' : i === stops.length - 1 ? 'destination' : 'waypoint'}`}>
+              <div className={`${styles.routeMarker} ${i === 0 ? styles.routeMarkerOrigin : i === stops.length - 1 ? styles.routeMarkerDestination : styles.routeMarkerWaypoint}`}>
                 <span>{String.fromCharCode(65 + i)}</span>
               </div>
             </AdvancedMarker>
           ) : null
         )}
       </Map>
-      <div className="osm-attribution">
+      <div className={styles.osmAttribution}>
         Cycleway data ©{' '}
         <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">
           OpenStreetMap

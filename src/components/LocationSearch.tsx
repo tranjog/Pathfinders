@@ -4,6 +4,7 @@ import type { LatLng } from '@types';
 import { SearchIcon, LocateIcon } from '@assets';
 import { isMac, isTauri } from '@utils/platform';
 import { useUserLocationStore } from '@store/userLocationStore';
+import styles from './LocationSearch.module.css';
 
 export type SearchTarget = {
   center: LatLng;
@@ -58,8 +59,8 @@ export default function LocationSearch({ onSelect }: Props) {
   }, [placesLib, onSelect]);
 
   return (
-    <div className="location-search">
-      <SearchIcon className="location-search-icon" />
+    <div className={styles.locationSearch}>
+      <SearchIcon className={styles.locationSearchIcon} />
       <input
         ref={inputRef}
         type="text"
@@ -68,7 +69,7 @@ export default function LocationSearch({ onSelect }: Props) {
       />
       <button
         type="button"
-        className="location-search-locate"
+        className={styles.locationSearchLocate}
         title="Use my location"
         aria-label="Use my location"
         onClick={handleLocate}

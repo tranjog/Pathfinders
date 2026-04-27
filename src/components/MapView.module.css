@@ -1,0 +1,53 @@
+.routeMarker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.routeMarker span {
+  transform: rotate(45deg);
+}
+
+.routeMarkerOrigin {
+  background: #4caf50;
+}
+
+.routeMarkerWaypoint {
+  background: #ff9800;
+}
+
+.routeMarkerDestination {
+  background: #f44336;
+}
+
+.osmAttribution {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #333;
+  font-size: 11px;
+  border-radius: 3px;
+  pointer-events: auto;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.osmAttribution a {
+  color: #0078d7;
+  text-decoration: none;
+}
+
+.osmAttribution a:hover {
+  text-decoration: underline;
+}
