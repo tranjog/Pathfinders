@@ -4,7 +4,7 @@ import type { LatLng } from '@types';
 import { LocateIcon, MapPinIcon } from '@assets';
 import { useRoutePlannerStore, MAX_STOPS } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
-import { createAutocompleteElement } from '@utils/maps';
+import { createAutocompleteElement, setGmpInputValue } from '@utils/maps';
 import styles from './RoutePlanner.module.css';
 
 interface RoutePlannerProps {
@@ -59,11 +59,13 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
     stops.forEach((_, i) => initAutocomplete(i));
   }, [placesLib, stops, initAutocomplete]);
 
-  // Sync display value when a stop is set externally (map click, "My Location")
+  // Sync display value when a stop is set externally (map click, "My Location",
+  // restoring a saved route). gmp-place-autocomplete's shadow root is closed,
+  // so reach the underlying input via the element's properties (see findGmpInput).
   useEffect(() => {
     stops.forEach((stop, i) => {
-      const shadowInput = elementRefs.current[i]?.shadowRoot?.querySelector('input');
-      if (shadowInput && shadowInput.value !== stop.label) shadowInput.value = stop.label;
+      const element = elementRefs.current[i];
+      if (element) setGmpInputValue(element, stop.label);
     });
   }, [stops]);
 
@@ -73,11 +75,20 @@ export default function RoutePlanner({ onRoute, onClear, loading, open, onToggle
   };
 
   const handleRemoveStop = (index: number) => {
-    const element = elementRefs.current[index];
-    const container = containerRefs.current[index];
-    if (element && container && container.contains(element)) container.removeChild(element);
-    elementRefs.current.splice(index, 1);
-    containerRefs.current.splice(index, 1);
+    // Rows are keyed by index, so React unmounts the *last* row's DOM, not
+    // the removed row's. Every container at index >= removed is preserved
+    // and gets re-associated with a different stop. The autocomplete elements
+    // currently inside them were built for the wrong stops, so detach them
+    // and clear the refs from `index` onward — initAutocomplete will rebuild
+    // the missing ones in the next effect pass.
+    for (let i = index; i < elementRefs.current.length; i++) {
+      const element = elementRefs.current[i];
+      const container = containerRefs.current[i];
+      if (element && container && container.contains(element)) {
+        container.removeChild(element);
+      }
+    }
+    elementRefs.current.splice(index);
     removeStop(index);
   };
 

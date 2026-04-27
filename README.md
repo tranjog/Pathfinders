@@ -12,6 +12,7 @@ Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Wi
 
 - **Browse mode** — overlay OSM cycleway / footway segments on the visible map, color-coded by Street View availability
 - **Route mode** — multi-stop Google Maps cycling/walking directions (up to 10 stops); multiple route alternatives when no waypoints are present
+- **Save & restore routes** — name and revisit any planned multi-stop trip; saved locally per-install with rename / delete / one-click reload (re-runs Directions so the route stays current)
 - **Map-click location picking** — click any point on the map to set a stop; reverse-geocoded address fills the input automatically
 - **Street View ride** — animated playback of any segment or full route, sampled at fixed intervals with auto-computed heading
 - **Location search** — Google Places autocomplete in the header; jump to any city, address, or POI
@@ -81,10 +82,10 @@ On macOS, the first time you trigger location it'll show the system permission p
 ## Architecture
 
 - `src/App.tsx` — top-level layout, key resolution, browse vs route mode switching
-- `src/components/` — UI (map, search, sidebars, dialogs, movement controls)
+- `src/components/` — UI (map, search, sidebars, dialogs, movement controls, saved-routes panel)
 - `src/hooks/` — data fetching (OSM Overpass, Street View coverage, directions, geolocation, map session)
-- `src/store/` — Zustand stores (route planner state: stops, map pick mode)
-- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, geocoding, API key storage)
+- `src/store/` — Zustand stores (activity, route planner stops, directions, saved routes, playback, user location)
+- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, geocoding, API key storage, saved-route persistence)
 - `src/utils/` — map bounds, segment coloring, Overpass query builder, platform detection
 - `src/constants/activityConfig.ts` — per-activity OSM Overpass query + travel mode + theme
 - `src/constants/index.ts` — shared constants
