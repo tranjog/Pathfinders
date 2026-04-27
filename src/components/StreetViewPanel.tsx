@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { LatLng } from '@types';
+import styles from './StreetViewPanel.module.css';
 
 interface StreetViewPanelProps {
   position: LatLng | null;
@@ -34,12 +35,12 @@ export default function StreetViewPanel({ position, heading = 0, pitch = 0 }: St
 
   if (!position) {
     return (
-      <p className="no-sv-hint">Click a path to view Street View</p>
+      <p className={styles.noSvHint}>Click a path to view Street View</p>
     );
   }
 
   return (
-    <div className="street-view-container">
+    <div className={styles.streetViewContainer}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
     </div>
   );

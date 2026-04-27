@@ -1,5 +1,6 @@
 import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '@assets';
+import styles from './MovementControls.module.css';
 
 const SPEEDS = [
   { label: '0.5x', ms: 4000 },
@@ -18,7 +19,7 @@ export default function MovementControls() {
   if (total === 0) return null;
 
   return (
-    <div className="movement-controls">
+    <div className={styles.movementControls}>
       <button onClick={prev} disabled={currentIndex === 0} aria-label="Previous">
         <SkipBackIcon />
       </button>
@@ -28,13 +29,13 @@ export default function MovementControls() {
       <button onClick={next} disabled={currentIndex >= total - 1} aria-label="Next">
         <SkipForwardIcon />
       </button>
-      <div className="progress">
+      <div className={styles.progress}>
         <div
-          className="progress-bar"
+          className={styles.progressBar}
           style={{ width: `${progress * 100}%` }}
         />
       </div>
-      <span className="progress-text">
+      <span className={styles.progressText}>
         {currentIndex + 1} / {total}
       </span>
       <select

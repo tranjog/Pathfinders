@@ -24,7 +24,7 @@ import { samplePointsAlongPath } from '@services/geometry';
 import { SV_SAMPLE_INTERVAL_METERS, APP_MODE } from '@constants';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
 import type { AppMode, ActivityType, LatLng, PathSegment } from '@types';
-import './App.css';
+import styles from './App.module.css';
 
 declare global {
   interface Window { gm_authFailure?: () => void }
@@ -187,15 +187,15 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
 
   return (
     <>
-      <header className="app-header">
-        <AppLogoIcon className="app-logo" />
+      <header className={styles.appHeader}>
+        <AppLogoIcon className={styles.appLogo} />
         <LocationSearch onSelect={setSearchTarget} />
-        <div className="header-controls">
+        <div className={styles.headerControls}>
           <ActivityToggle onChange={handleActivityChange} />
           <ModeToggle mode={mode} onChange={setMode} />
           {keySource !== 'env' && (
             <button
-              className="btn-icon"
+              className={styles.btnIcon}
               title="API key settings"
               aria-label="API key settings"
               onClick={onOpenSettings}
@@ -205,8 +205,8 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
           )}
         </div>
       </header>
-      <main className="app-main" ref={mainRef}>
-        <div className="map-container" style={isStacked ? { flex: 'none', height: mapHeight } : { flex: 1, minWidth: 300 }}>
+      <main className={styles.appMain} ref={mainRef}>
+        <div className={styles.mapContainer} style={isStacked ? { flex: 'none', height: mapHeight } : { flex: 1, minWidth: 300 }}>
           <MapView searchTarget={searchTarget} isRouteMode={!isBrowse}>
             {isBrowse && (
               <CoverageOverlay
@@ -218,10 +218,10 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
           </MapView>
         </div>
         <div
-          className={`resize-handle${isStacked ? ' resize-handle--vertical' : ''}`}
+          className={`${styles.resizeHandle}${isStacked ? ` ${styles.resizeHandleVertical}` : ''}`}
           onMouseDown={() => { dragging.current = true; document.body.style.cursor = isStacked ? 'row-resize' : 'col-resize'; }}
         />
-        <div className="side-panel" style={isStacked ? {} : { width: sideWidth, flex: 'none' }}>
+        <div className={styles.sidePanel} style={isStacked ? {} : { width: sideWidth, flex: 'none' }}>
           {isBrowse ? (
             <>
               <BrowseSidebar
@@ -258,15 +258,15 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
               {routes.length > 0 && (
                 <div className="panel-section">
                   <h3>Routes ({routes.length})</h3>
-                  <div className="route-list">
+                  <div className={styles.routeList}>
                     {routes.map((r, i) => (
                       <div
                         key={i}
-                        className={`route-option ${i === selectedIndex ? 'route-option--selected' : ''}`}
+                        className={`${styles.routeOption}${i === selectedIndex ? ` ${styles.routeOptionSelected}` : ''}`}
                         onClick={() => selectRoute(i)}
                       >
-                        <div className="route-option-label">Route {i + 1}</div>
-                        <div className="route-option-info">
+                        <div className={styles.routeOptionLabel}>Route {i + 1}</div>
+                        <div className={styles.routeOptionInfo}>
                           {r.distance} · {r.duration}
                         </div>
                       </div>

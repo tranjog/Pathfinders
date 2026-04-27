@@ -3,6 +3,7 @@ import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { useActivityStore } from '@store/activityStore';
 import { ACTIVITY } from '@constants';
 import { RunnerIcon, CyclistIcon } from '@assets';
+import styles from './PlaybackMarker.module.css';
 
 export default function PlaybackMarker() {
   const { points, currentIndex } = useStreetViewPlaybackStore();
@@ -15,8 +16,8 @@ export default function PlaybackMarker() {
 
   return (
     <AdvancedMarker position={position} zIndex={100}>
-      <div className="playback-marker">
-        <Icon width={22} height={22} className="playback-marker__icon" />
+      <div className={styles.playbackMarker}>
+        <Icon width={22} height={22} className={styles.playbackMarkerIcon} />
       </div>
     </AdvancedMarker>
   );

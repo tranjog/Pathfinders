@@ -1,0 +1,71 @@
+.locationSearch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.locationSearchIcon {
+  position: absolute;
+  left: 8px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.locationSearch input {
+  width: 240px;
+  padding: 6px 30px 6px 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.locationSearch input::placeholder {
+  color: var(--text-muted);
+}
+
+.locationSearch input:focus {
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.locationSearchLocate {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.locationSearchLocate:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 768px) {
+  .locationSearch {
+    order: 3;
+    margin-left: 0;
+    margin-right: 0;
+    flex-basis: 100%;
+    min-width: 0;
+    padding-bottom: 6px;
+  }
+
+  .locationSearch input {
+    width: 100%;
+  }
+}
