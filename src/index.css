@@ -23,13 +23,13 @@
 }
 
 [data-activity="running"] {
-  --bg: #2e1f1a;
-  --bg-panel: #3e2a16;
-  --bg-header: #5c3310;
-  --accent: #e87830;
-  --accent-hover: #ff9a52;
-  --text-muted: #b0a090;
-  --border: #4a3a2a;
+  --bg: #0a1210;
+  --bg-panel: #0e1a14;
+  --bg-header: #0e1c16;
+  --accent: #28a55a;
+  --accent-hover: #3dbf6e;
+  --text-muted: #7a9e8a;
+  --border: #1a3028;
 }
 
 body {
