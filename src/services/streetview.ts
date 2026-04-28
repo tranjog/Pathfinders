@@ -1,5 +1,5 @@
 import type { LatLng } from '@types';
-import { SV_SEARCH_RADIUS } from '@constants';
+import { SV_SEARCH_RADIUS } from '@constants/tuning';
 
 // Cache coverage results keyed by rounded lat/lng
 const coverageCache = new Map<string, boolean>();

@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import type { PathSegment, LatLng } from '@types';
 import { samplePointsAlongPath } from '@services/geometry';
 import { checkCoverageAtPoints } from '@services/streetview';
-import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
+import { SV_SAMPLE_INTERVAL_METERS } from '@constants/tuning';
 
 interface CoverageResult {
   segment: PathSegment;

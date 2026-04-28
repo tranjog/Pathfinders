@@ -3,7 +3,7 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import type { LatLng } from '@types';
 import { LocateIcon } from '@assets';
 import { isMac, isTauri } from '@utils/platform';
-import { createAutocompleteElement } from '@utils/maps';
+import { createAutocompleteElement } from '@services/places';
 import { useUserLocationStore } from '@store/userLocationStore';
 import styles from './LocationSearch.module.css';
 

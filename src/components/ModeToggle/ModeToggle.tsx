@@ -1,5 +1,4 @@
-import type { AppMode } from '@types';
-import { APP_MODE } from '@constants';
+import { APP_MODE, type AppMode } from '@constants/appMode';
 import styles from './ModeToggle.module.css';
 
 interface ModeToggleProps {

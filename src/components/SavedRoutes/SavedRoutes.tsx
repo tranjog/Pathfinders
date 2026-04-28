@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { SavedRoute } from '@types';
-import { ACTIVITY } from '@constants';
+import { ACTIVITY } from '@constants/activity';
 import { useSavedRoutesStore } from '@store/savedRoutesStore';
 import { useActivityStore } from '@store/activityStore';
 import { CyclistIcon, RunnerIcon } from '@assets';
-import ExportRouteDialog from './ExportRouteDialog';
+import ExportRouteDialog from '@components/ExportRouteDialog';
 import styles from './SavedRoutes.module.css';
 
 interface SavedRoutesProps {

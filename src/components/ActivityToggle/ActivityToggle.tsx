@@ -1,6 +1,6 @@
-import type { ActivityType } from '@types';
+import type { ActivityType } from '@constants/activity';
 import { useActivityStore } from '@store/activityStore';
-import { ACTIVITY } from '@constants';
+import { ACTIVITY } from '@constants/activity';
 import { CyclistIcon, RunnerIcon } from '@assets';
 import styles from './ActivityToggle.module.css';
 

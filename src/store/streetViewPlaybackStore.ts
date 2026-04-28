@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { LatLng, MoverState } from '@types';
 import { computeHeading } from '@services/geometry';
-import { MOVE_INTERVAL_MS } from '@constants';
+import { MOVE_INTERVAL_MS } from '@constants/tuning';
 
 // Timer and speed live outside Zustand state — they're imperatives, not reactive data
 let intervalId: ReturnType<typeof setInterval> | undefined;

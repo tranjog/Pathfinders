@@ -3,7 +3,7 @@ import { useMap } from '@vis.gl/react-google-maps';
 import type { PathSegment } from '@types';
 import { useActivityStore } from '@store/activityStore';
 import { useMapSessionStore } from '@store/mapSessionStore';
-import { ACTIVITY } from '@constants';
+import { ACTIVITY } from '@constants/activity';
 
 interface CoverageOverlayProps {
   segments: PathSegment[];

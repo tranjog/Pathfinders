@@ -1,12 +1,12 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Map, useMap, useMapsLibrary, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps';
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@constants';
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@constants/tuning';
 import type { LatLng } from '@types';
-import type { SearchTarget } from './LocationSearch';
+import type { SearchTarget } from '@components/LocationSearch';
 import { useRoutePlannerStore } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
 import { reverseGeocode } from '@services/geocoder';
-import PlaybackMarker from './PlaybackMarker';
+import PlaybackMarker from '@components/PlaybackMarker';
 import styles from './MapView.module.css';
 
 interface MapViewProps {
