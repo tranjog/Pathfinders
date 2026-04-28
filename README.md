@@ -59,14 +59,6 @@ Switch to Route mode, drop in up to 10 stops (type, click on map, or "use my loc
 
 Save any route by name. Reloading replays the original stops through the Directions API so the route stays current with up-to-date roads. Stored locally per-install — nothing leaves your machine.
 
-### 🚴↔🏃 Activity switcher — one app, two themes
-
-![Activity switcher](docs/screenshots/activity-toggle.jpg)
-
-> 📸 _**Screenshot needed:** either a side-by-side composite (cycling on the left, running on the right) showing the same area with different themed colors and overlay densities, OR a single shot focused on the cycling/running toggle in the header with the dropdown / pills visible. The side-by-side is more impactful._
-
-Toggle between cycling and running. Each activity loads its own Overpass query (cycleways vs footways), passes the appropriate travel mode to Google Directions, and switches the entire app's theme color.
-
 ### 🔍 Location search — jump anywhere
 
 ![Location search](docs/screenshots/location-search.jpg)
