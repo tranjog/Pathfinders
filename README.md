@@ -1,25 +1,71 @@
 # Pathfinders
 
-Pathfinders is a desktop app for scouting cycling and running routes before you head out. Pan the map to anywhere in the world and the app pulls the local cycleway and footway network from OpenStreetMap, overlays it on Google Maps, and tells you which segments have Street View coverage. Click any segment to drop into Street View at that point, then play it back as a virtual "ride" or "run" sampled along the path.
+> Scout cycling and running routes from your desk — before you head out the door.
 
-When you want to plan a specific trip, switch to Route mode: enter up to 10 stops (type an address, click the map, or use your current location), pick from cycling/walking route alternatives, and preview the whole route in Street View frame by frame. Toggle between cycling and running themes; each loads its own OSM query and the appropriate Google travel mode.
+Pathfinders overlays OpenStreetMap's cycleway and footway network on top of Google Maps, tells you which segments have Street View coverage, and lets you "ride" or "run" any path frame-by-frame in Street View. Plan multi-stop trips, save them, and replay them later.
 
-Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Windows, and Linux, or as a plain web app for development.
+Built with **Tauri + React + TypeScript**. Runs as a native desktop app on macOS, Windows, and Linux, or as a web app for development.
 
-> **Bring your own Google Maps API key.** Pathfinders does not ship with a key — every install must supply one. You can either bake it into the build via a `.env` file or paste it into the in-app dialog on first launch. See [Providing the Google Maps API key](#providing-the-google-maps-api-key) below. All API usage is billed to *your* Google Cloud account, so set quota caps and key restrictions before publishing builds.
+![Pathfinders hero shot](docs/screenshots/hero.jpg)
 
-## Features
+---
 
-- **Browse mode** — overlay OSM cycleway / footway segments on the visible map, color-coded by Street View availability
-- **Route mode** — multi-stop Google Maps cycling/walking directions (up to 10 stops); multiple route alternatives when no waypoints are present
-- **Save & restore routes** — name and revisit any planned multi-stop trip; saved locally per-install with rename / delete / one-click reload (re-runs Directions so the route stays current)
-- **Map-click location picking** — click any point on the map to set a stop; reverse-geocoded address fills the input automatically
-- **Street View ride** — animated playback of any segment or full route, sampled at fixed intervals with auto-computed heading
-- **Location search** — Google Places autocomplete in the header; jump to any city, address, or POI
-- **Use my location** — center the map on your current GPS position; native OS prompt via `tauri-plugin-geolocation` in the desktop app, browser geolocation in the web build
-- **Activity switcher** — cycling vs running, with themed colors and activity-specific OSM queries
-- **BYOK (bring your own key)** — supply a Google Maps key at build time (`.env`) or paste it into the in-app dialog on first launch; key stored locally, never bundled in the public source
-- **Map data attribution** — built-in OpenStreetMap credit on the map (ODbL compliance)
+## Why Pathfinders?
+
+- **You want to know where the cycle paths actually are** — not just where Google says you can ride. OSM has the granular cycleway/footway data; Pathfinders surfaces it.
+- **You want to see the route before you ride it** — every segment is one click away from Street View, and you can play any path back as a virtual ride.
+- **You plan trips in stages** — multi-stop routing with saveable, reloadable trips, switchable between cycling and running.
+
+## Features at a glance
+
+| | |
+|---|---|
+| 🗺️ **Browse mode** | OSM cycleway/footway segments overlaid on the map, color-coded by Street View availability |
+| 🚴 **Street View ride** | Animated playback of any segment or full route, sampled at fixed intervals with auto-computed heading |
+| 📍 **Route mode** | Multi-stop Google Maps cycling/walking directions (up to 10 stops) with route alternatives |
+| 💾 **Saved routes** | Name and revisit any planned trip; rename / delete / one-click reload |
+| 🖱️ **Map-click picking** | Click anywhere to set a stop; reverse-geocoded address fills the input automatically |
+| 🔍 **Location search** | Google Places autocomplete in the header — jump to any city, address, or POI |
+| 📡 **Use my location** | Native OS GPS prompt in the desktop app, browser geolocation in the web build |
+| 🚴↔🏃 **Activity switcher** | Cycling vs running, with themed colors and activity-specific OSM queries |
+| 🔑 **BYOK** | Bring your own Google Maps key — bake it into the build or paste it at runtime |
+| 📜 **Attribution baked in** | OpenStreetMap credit always rendered on the map (ODbL compliance) |
+
+---
+
+## Showcase
+
+### 🗺️ Browse mode — see the cycle network at a glance
+
+![Browse mode with OSM overlay](docs/screenshots/browse-mode.jpg)
+
+Pan anywhere in the world. Pathfinders queries the OpenStreetMap Overpass API for all cycleways or footways in view, then checks which ones have Street View coverage. Color-coded segments show you instantly where you can — and can't — preview the route.
+
+### 🚴 Street View ride — virtual scout before you ride
+
+![Street View ride playback](docs/screenshots/street-view-ride.jpg)
+
+Click any segment in Browse mode and Pathfinders drops you into Street View at that point. Hit **▶** and the app samples points along the path at fixed intervals, snaps Street View to each one, and computes heading from the path geometry — you watch the route pass by like a low-frame-rate ride.
+
+### 📍 Route mode — multi-stop planning
+
+![Route mode planner](docs/screenshots/route-mode.jpg)
+
+Switch to Route mode, drop in up to 10 stops (type, click on map, or "use my location"), and Pathfinders calls the Google Directions API with cycling or walking mode depending on activity. When you have just two stops, you get route alternatives to compare. The whole route is then playable in Street View.
+
+### 💾 Saved routes — your scouted trips, one click away
+
+![Saved routes panel](docs/screenshots/saved-routes.jpg)
+
+Save any route by name. Reloading replays the original stops through the Directions API so the route stays current with up-to-date roads. Stored locally per-install — nothing leaves your machine.
+
+### 🔍 Location search — jump anywhere
+
+![Location search](docs/screenshots/location-search.jpg)
+
+Google Places autocomplete in the header — type any city, address, or POI and the map flies there. The "Use my location" icon next to it triggers a native GPS prompt (Tauri plugin on desktop, browser geolocation on web).
+
+---
 
 ## Setup
 
@@ -35,7 +81,7 @@ Built with Tauri + React + TypeScript. Runs as a native desktop app on macOS, Wi
 
 Get a key: https://developers.google.com/maps/documentation/javascript/get-api-key
 
-Restrict the key (HTTP referrers for web, application restrictions for the bundled app) and set a daily quota cap before publishing builds — Maps Platform charges per request.
+> ⚠️ **Bring your own Google Maps API key.** Pathfinders does not ship with a key — every install must supply one. All API usage is billed to *your* Google Cloud account, so **set quota caps and key restrictions before publishing builds**.
 
 ### Install
 
@@ -60,6 +106,8 @@ The build will use this key directly and the in-app key dialog will not appear.
 
 If Google rejects the key (wrong restrictions, missing APIs), the app catches the auth failure, clears the stored user-supplied key, and reopens the dialog with an error.
 
+![BYOK dialog](docs/screenshots/api-key-dialog.jpg)
+
 ## Running
 
 ### Web (development only)
@@ -81,17 +129,7 @@ On macOS, the first time you trigger location it'll show the system permission p
 
 ## Architecture
 
-- `src/App.tsx` — top-level layout, key resolution, browse vs route mode switching
-- `src/components/` — UI (map, search, sidebars, dialogs, movement controls, saved-routes panel)
-- `src/hooks/` — data fetching (OSM Overpass, Street View coverage, directions, geolocation, map session)
-- `src/store/` — Zustand stores (activity, route planner stops, directions, saved routes, playback, user location)
-- `src/services/` — pure helpers (Overpass queries, geometry, Street View, directions, geocoding, API key storage, saved-route persistence)
-- `src/utils/` — map bounds, segment coloring, Overpass query builder, platform detection
-- `src/constants/activityConfig.ts` — per-activity OSM Overpass query + travel mode + theme
-- `src/constants/index.ts` — shared constants
-- `src/types/index.ts` — shared TypeScript types
-- `src/assets/icons/` — SVG icon components
-- `src-tauri/` — Rust shell, plugin registrations, capabilities, macOS Info.plist
+For a tour of the codebase — layer responsibilities, store boundaries, and the data-flow diagrams for Browse mode, Route mode, and BYOK — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Attribution
 
