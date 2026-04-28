@@ -14,8 +14,8 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
-    "@tauri-apps/plugin-dialog": "^2.7.0",
-    "@tauri-apps/plugin-fs": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "2.7.0",
+    "@tauri-apps/plugin-fs": "2.5.0",
     "@tauri-apps/plugin-geolocation": "2.3.2",
     "@types/google.maps": "3.64.0",
     "@vis.gl/react-google-maps": "1.8.3",
