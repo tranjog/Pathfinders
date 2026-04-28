@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { SavedRoute, SavedRouteData, Stop, ActivityType } from '@types';
+import type { SavedRoute, SavedRouteData, Stop } from '@types';
+import type { ActivityType } from '@constants/activity';
 import { loadAll, saveAll } from '@services/savedRoutes';
 
 interface SavedRoutesState {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
-import { boundsForPath } from '@utils/mapBounds';
+import { boundsForPath } from '@services/mapBounds';
 import { useDirectionsStore } from '@store/directionsStore';
 
 export default function RouteOverlay() {

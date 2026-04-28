@@ -1,5 +1,6 @@
-import type { ActivityConfig, ActivityType } from '@types';
-import { ACTIVITY, TRAVEL_MODE } from '@constants';
+import type { ActivityConfig } from '@types';
+import { ACTIVITY, type ActivityType } from '@constants/activity';
+import { TRAVEL_MODE } from '@constants/travelMode';
 import { cyclingOverpassQuery, runningOverpassQuery } from '@utils/overpassQuery';
 
 export const ACTIVITY_CONFIGS: Record<ActivityType, ActivityConfig> = {

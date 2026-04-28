@@ -1,3 +1,6 @@
+import type { ActivityType } from '@constants/activity';
+import type { TravelModeKey } from '@constants/travelMode';
+
 export interface LatLng {
   lat: number;
   lng: number;
@@ -24,20 +27,12 @@ export interface RouteData {
   duration: string;
 }
 
-import { ACTIVITY, APP_MODE, TRAVEL_MODE } from '@constants';
-
-export type AppMode = typeof APP_MODE[keyof typeof APP_MODE];
-
-export type ActivityType = typeof ACTIVITY[keyof typeof ACTIVITY];
-
 export interface MoverState {
   isPlaying: boolean;
   currentIndex: number;
   heading: number;
   points: LatLng[];
 }
-
-export type TravelModeKey = typeof TRAVEL_MODE[keyof typeof TRAVEL_MODE];
 
 export interface SavedRouteData {
   polyline: LatLng[];

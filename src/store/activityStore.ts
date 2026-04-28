@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { ACTIVITY } from '@constants';
-import type { ActivityType } from '@types';
+import { ACTIVITY, type ActivityType } from '@constants/activity';
 
 interface ActivityState {
   activity: ActivityType;

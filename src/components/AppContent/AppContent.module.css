@@ -76,61 +76,6 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-.routeList {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.routeOption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.routeOption:hover {
-  background: rgba(33, 150, 243, 0.08);
-}
-
-.routeOptionSelected {
-  background: rgba(33, 150, 243, 0.15);
-  border-color: #2196f3;
-}
-
-.routeOptionLabel {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.routeOptionInfo {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.actionRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.actionRow > * {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-/* When SaveRouteAction is in its expanded (input) state, it gets this class
-   to break onto its own row so the input has room to breathe. */
-.actionRowFull {
-  flex: 0 0 100%;
-}
-
 @media (max-width: 768px) {
   .appHeader {
     height: auto;

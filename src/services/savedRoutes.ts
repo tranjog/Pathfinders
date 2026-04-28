@@ -1,5 +1,5 @@
-import type { SavedRoute, SavedRouteData, Stop, ActivityType } from '@types';
-import { ACTIVITY } from '@constants';
+import type { SavedRoute, SavedRouteData, Stop } from '@types';
+import { ACTIVITY, type ActivityType } from '@constants/activity';
 
 const STORAGE_KEY = 'pathfinders.savedRoutes';
 

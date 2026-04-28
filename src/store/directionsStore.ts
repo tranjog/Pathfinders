@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { LatLng, RouteData, SavedRouteData, TravelModeKey } from '@types';
+import type { LatLng, RouteData, SavedRouteData } from '@types';
+import type { TravelModeKey } from '@constants/travelMode';
 import { getRoutes as getDirectionRoutes } from '@services/directions';
 
 interface DirectionsState {

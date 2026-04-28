@@ -1,6 +1,6 @@
 import type { LatLng, RouteData } from '@types';
 import { decodePath, samplePointsAlongPath } from './geometry';
-import { SV_SAMPLE_INTERVAL_METERS } from '@constants';
+import { SV_SAMPLE_INTERVAL_METERS } from '@constants/tuning';
 
 let directionsService: google.maps.DirectionsService | null = null;
 

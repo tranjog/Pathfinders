@@ -4,7 +4,7 @@ import type { LatLng } from '@types';
 import { LocateIcon, MapPinIcon } from '@assets';
 import { useRoutePlannerStore, MAX_STOPS } from '@store/routePlannerStore';
 import { useUserLocationStore } from '@store/userLocationStore';
-import { createAutocompleteElement, setGmpInputValue } from '@utils/maps';
+import { createAutocompleteElement, setGmpInputValue } from '@services/places';
 import styles from './RoutePlanner.module.css';
 
 interface RoutePlannerProps {

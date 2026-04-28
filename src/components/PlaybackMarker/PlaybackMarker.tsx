@@ -1,7 +1,7 @@
 import { AdvancedMarker } from '@vis.gl/react-google-maps';
 import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { useActivityStore } from '@store/activityStore';
-import { ACTIVITY } from '@constants';
+import { ACTIVITY } from '@constants/activity';
 import { RunnerIcon, CyclistIcon } from '@assets';
 import styles from './PlaybackMarker.module.css';
 

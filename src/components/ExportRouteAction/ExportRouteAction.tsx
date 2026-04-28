@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { RouteData, Stop } from '@types';
-import ExportRouteDialog from './ExportRouteDialog';
-import styles from './SavedRoutes.module.css';
+import ExportRouteDialog from '@components/ExportRouteDialog';
+import styles from '../SavedRoutes/SavedRoutes.module.css';
 
 interface Props {
   route: RouteData;

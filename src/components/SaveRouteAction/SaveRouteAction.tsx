@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type { RouteData, Stop, ActivityType } from '@types';
+import type { RouteData, Stop } from '@types';
+import type { ActivityType } from '@constants/activity';
 import { useSavedRoutesStore } from '@store/savedRoutesStore';
-import styles from './SavedRoutes.module.css';
+import styles from '../SavedRoutes/SavedRoutes.module.css';
 
 interface SaveRouteActionProps {
   route: RouteData;
