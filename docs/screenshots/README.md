@@ -13,6 +13,7 @@ Drop the following files in this directory. The main `README.md` references them
 | `api-key-dialog.jpg` | ✅ present | The BYOK dialog on a fresh launch — title, input, save button. |
 | `saved-routes.jpg` | ✅ present | Saved Routes panel expanded with 2–4 saved routes listed (name + activity icon + stop count). Bonus: rename/delete affordances visible. |
 | `location-search.jpg` | ✅ present | Header location-search input with the Google Places autocomplete dropdown open (3–5 suggestions). "Use my location" icon visible next to it. |
+| `export-route.jpg` | ✅ present | Export route dialog open over the map — format picker (GPX selected, KML/Garmin/Strava as "Soon" tiles), GPX type segmented control, include toggles, filename preview, and Cancel/Download buttons. |
 
 ## Tips
 

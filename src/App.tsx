@@ -9,6 +9,7 @@ import BrowseSidebar from '@components/BrowseSidebar';
 import RoutePlanner from '@components/RoutePlanner';
 import SavedRoutes from '@components/SavedRoutes';
 import SaveRouteAction from '@components/SaveRouteAction';
+import ExportRouteAction from '@components/ExportRouteAction';
 import StreetViewPanel from '@components/StreetViewPanel';
 import MovementControls from '@components/MovementControls';
 import ApiKeyDialog from '@components/ApiKeyDialog';
@@ -104,6 +105,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const [plannerOpen, setPlannerOpen] = useState(true);
   const [savedOpen, setSavedOpen] = useState(true);
   const setStops = useRoutePlannerStore((s) => s.setStops);
+  const clearStops = useRoutePlannerStore((s) => s.clear);
 
   const config = ACTIVITY_CONFIGS[activity];
 
@@ -191,6 +193,16 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
     resetMapSession();
     resetPlayback([], false);
   }, [clearRoute, resetMapSession, resetPlayback]);
+
+  // When the user picks a new place from the header search bar, wipe any
+  // in-progress route so they aren't left with stale stops from a different city.
+  useEffect(() => {
+    if (!searchTarget) return;
+    clearStops();
+    clearRoute();
+    resetMapSession();
+    resetPlayback([], false);
+  }, [searchTarget, clearStops, clearRoute, resetMapSession, resetPlayback]);
 
   const handleLoadSavedRoute = useCallback(
     (saved: SavedRoute) => {
@@ -294,16 +306,20 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                       </div>
                     ))}
                   </div>
-                  <button
-                    className="btn-go"
-                    style={{ marginTop: 8, width: '100%' }}
-                    onClick={() => { if (route) { handleStartMovement(route.polyline); setPlannerOpen(false); } }}
-                  >
-                    {config.actionVerb} this route
-                  </button>
-                  {route && (
-                    <SaveRouteAction route={route} stops={stops} activity={activity} />
-                  )}
+                  <div className={styles.actionRow}>
+                    <button
+                      className="btn-go"
+                      onClick={() => { if (route) { handleStartMovement(route.polyline); setPlannerOpen(false); } }}
+                    >
+                      {config.actionVerb}
+                    </button>
+                    {route && (
+                      <>
+                        <SaveRouteAction route={route} stops={stops} activity={activity} />
+                        <ExportRouteAction route={route} stops={stops} />
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
               <StreetViewPanel />

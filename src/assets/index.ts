@@ -9,3 +9,4 @@ export { default as SkipForwardIcon } from './icons/SkipForwardIcon';
 export { default as MapPinIcon } from './icons/MapPinIcon';
 export { default as RunnerIcon } from './icons/RunnerIcon';
 export { default as CyclistIcon } from './icons/CyclistIcon';
+export { default as GpxIcon } from './icons/GpxIcon';

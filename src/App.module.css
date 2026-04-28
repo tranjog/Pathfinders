@@ -113,6 +113,24 @@
   color: var(--text-muted);
 }
 
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.actionRow > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* When SaveRouteAction is in its expanded (input) state, it gets this class
+   to break onto its own row so the input has room to breathe. */
+.actionRowFull {
+  flex: 0 0 100%;
+}
+
 @media (max-width: 768px) {
   .appHeader {
     height: auto;
