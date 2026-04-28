@@ -45,18 +45,17 @@ export default function SaveRouteAction({ route, stops, activity }: SaveRouteAct
     return (
       <button
         className={styles.btnSave}
-        style={{ marginTop: 8, width: '100%' }}
         onClick={handleOpen}
         disabled={!canSave}
         title={canSave ? 'Save this route' : 'Set at least 2 stops to save'}
       >
-        Save this route
+        Save
       </button>
     );
   }
 
   return (
-    <div className={styles.saveBar} style={{ marginTop: 8 }}>
+    <div className={styles.saveBar} style={{ flex: '0 0 100%' }}>
       <input
         autoFocus
         type="text"

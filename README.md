@@ -24,6 +24,7 @@ Built with **Tauri + React + TypeScript**. Runs as a native desktop app on macOS
 | 🚴 **Street View ride** | Animated playback of any segment or full route, sampled at fixed intervals with auto-computed heading |
 | 📍 **Route mode** | Multi-stop Google Maps cycling/walking directions (up to 10 stops) with route alternatives |
 | 💾 **Saved routes** | Name and revisit any planned trip; rename / delete / one-click reload |
+| ⤓ **GPX export** | Export the active route or any saved route to a `.gpx` file (track or route variant), with optional waypoints and synthetic timestamps. Garmin Connect / Strava integrations on the roadmap. |
 | 🖱️ **Map-click picking** | Click anywhere to set a stop; reverse-geocoded address fills the input automatically |
 | 🔍 **Location search** | Google Places autocomplete in the header — jump to any city, address, or POI |
 | 📡 **Use my location** | Native OS GPS prompt in the desktop app, browser geolocation in the web build |
@@ -58,6 +59,21 @@ Switch to Route mode, drop in up to 10 stops (type, click on map, or "use my loc
 ![Saved routes panel](docs/screenshots/saved-routes.jpg)
 
 Save any route by name. Reloading replays the original stops through the Directions API so the route stays current with up-to-date roads. Stored locally per-install — nothing leaves your machine.
+
+### ⤓ Export — take your route to any device
+
+![Export route dialog](docs/screenshots/export-route.jpg)
+
+Click **Export** in the active-route panel, or the ⤓ icon next to any saved route. Pathfinders opens a dialog with a format picker and writes a clean GPX 1.1 file you can hand to anything that speaks GPX — Garmin Connect, Komoot, Wahoo, Ride With GPS, plain old GPS receivers.
+
+- **Track or Route** — pick `<trk>` (modern, accepted everywhere) or `<rte>` (older Garmin courses).
+- **Waypoints for every stop** — each A/B/C marker becomes a named `<wpt>` so your device shows them on the map.
+- **Synthetic timestamps** — generates monotonically increasing times along the polyline for devices that won't read a route without them.
+- **Filename + size preview** — slugified from the route name, so `Münchenbuchsee → Bern` saves as `munchenbuchsee-bern.gpx`.
+- **Native save sheet on desktop** — Tauri's dialog plugin (`@tauri-apps/plugin-dialog` + `@tauri-apps/plugin-fs`) opens a real macOS/Windows/Linux save sheet so you choose where the file lands. The web build falls back to a standard browser download.
+- **Copy to clipboard** — for when you'd rather paste the XML somewhere directly.
+
+KML export and direct push to **Strava** and **Garmin Connect** courses are on the roadmap (the format picker already shows them as "Soon" tiles).
 
 ### 🔍 Location search — jump anywhere
 

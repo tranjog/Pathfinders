@@ -4,6 +4,7 @@ import { ACTIVITY } from '@constants';
 import { useSavedRoutesStore } from '@store/savedRoutesStore';
 import { useActivityStore } from '@store/activityStore';
 import { CyclistIcon, RunnerIcon } from '@assets';
+import ExportRouteDialog from './ExportRouteDialog';
 import styles from './SavedRoutes.module.css';
 
 interface SavedRoutesProps {
@@ -26,6 +27,10 @@ export default function SavedRoutes({ open, onToggle, onLoad }: SavedRoutesProps
   const visibleRoutes = routes.filter((r) => r.activity === activity);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [exportingId, setExportingId] = useState<string | null>(null);
+  const exportingRoute = exportingId
+    ? visibleRoutes.find((r) => r.id === exportingId) ?? null
+    : null;
 
   const startRename = (route: SavedRoute) => {
     setRenamingId(route.id);
@@ -107,6 +112,13 @@ export default function SavedRoutes({ open, onToggle, onLoad }: SavedRoutesProps
                         <div className={styles.savedActions} onClick={(e) => e.stopPropagation()}>
                           <button
                             className={styles.iconBtn}
+                            title="Export"
+                            onClick={() => setExportingId(route.id)}
+                          >
+                            ⤓
+                          </button>
+                          <button
+                            className={styles.iconBtn}
                             title="Rename"
                             onClick={() => startRename(route)}
                           >
@@ -129,6 +141,18 @@ export default function SavedRoutes({ open, onToggle, onLoad }: SavedRoutesProps
           )}
         </div>
       </div>
+      {exportingRoute && (
+        <ExportRouteDialog
+          route={{
+            name: exportingRoute.name,
+            polyline: exportingRoute.route.polyline,
+            stops: exportingRoute.stops,
+            distance: exportingRoute.route.distance,
+            duration: exportingRoute.route.duration,
+          }}
+          onClose={() => setExportingId(null)}
+        />
+      )}
     </div>
   );
 }
