@@ -150,12 +150,9 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   const { routes, selectedIndex, loading: routeLoading, error: routeError, getRoute, setSavedRoute, selectRoute, clearRoute } = useDirectionsStore();
   const route = routes[selectedIndex] ?? null;
   const stops = useRoutePlannerStore((s) => s.stops);
-  const { points: moverPoints, currentIndex: moverIndex, heading: moverHeading, reset: resetPlayback } = useStreetViewPlaybackStore();
+  const { points: moverPoints, reset: resetPlayback } = useStreetViewPlaybackStore();
   const {
     segments,
-    selectedSegment,
-    streetViewPosition,
-    streetViewHeading,
     handleSegmentClick: handleSegmentClickRaw,
     reset: resetMapSession,
   } = useMapSession(rawSegments, checkSegmentCoverage);
@@ -176,8 +173,6 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
   }, [setActivity, resetMapSession, clearRoute, resetPlayback]);
 
   const isMoving = moverPoints.length > 0;
-  const effectivePosition = isMoving ? moverPoints[moverIndex] : streetViewPosition;
-  const effectiveHeading = isMoving ? moverHeading : streetViewHeading;
 
   const handleStartMovement = useCallback((points: LatLng[]) => {
     const sampled = samplePointsAlongPath(points, SV_SAMPLE_INTERVAL_METERS);
@@ -255,16 +250,12 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                 error={error}
                 tooZoomedOut={tooZoomedOut}
                 segmentCount={segments.length}
-                selectedSegment={selectedSegment}
                 checking={checking}
                 coverageProgress={progress}
                 onStartMovement={handleStartMovement}
                 config={config}
               />
-              <StreetViewPanel
-                position={effectivePosition}
-                heading={effectiveHeading}
-              />
+              <StreetViewPanel />
               {isMoving && <MovementControls />}
             </>
           ) : (
@@ -315,10 +306,7 @@ function AppContent({ keySource, onOpenSettings }: AppContentProps) {
                   )}
                 </div>
               )}
-              <StreetViewPanel
-                position={effectivePosition}
-                heading={effectiveHeading}
-              />
+              <StreetViewPanel />
               {isMoving && <MovementControls />}
             </>
           )}

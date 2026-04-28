@@ -51,7 +51,7 @@ UI building blocks. Each one is scoped to a single concern and styled via CSS Mo
 | File | Role |
 |---|---|
 | `MapView.tsx` | Google Map host, search-target panning, route-mode marker rendering |
-| `CoverageOverlay.tsx` | Renders OSM segments as polylines colored by Street View coverage |
+| `CoverageOverlay.tsx` | Renders OSM segments as polylines in the active activity's theme accent, with a halo highlight on the selected segment |
 | `RouteOverlay.tsx` | Renders the active route polyline in Route mode |
 | `PlaybackMarker.tsx` | The cyclist/runner marker that follows playback or Street View position |
 | `StreetViewPanel.tsx` | Embedded Google Street View pane synced to a `LatLng` + heading |
@@ -72,7 +72,7 @@ React hooks that combine services + stores into reusable behaviours.
 | `useApiKey.ts` | Resolves env vs user-supplied API key; handles auth-failure resets |
 | `useOverpassPaths.ts` | Fetches OSM cycleways/footways for the current map bounds (debounced) |
 | `useStreetViewCoverage.ts` | For each segment, queries Street View metadata and caches coverage |
-| `useMapSession.ts` | Holds per-session state (selected segment, Street View position/heading) |
+| `useMapSession.ts` | Browse-mode orchestration: merges raw paths with the cached coverage results in `mapSessionStore`, exposes the segment-click handler that toggles selection / triggers coverage checks |
 
 ### `store/`
 
@@ -85,6 +85,7 @@ Zustand stores. Each store owns one slice of global state.
 | `directionsStore` | Fetched route alternatives, selected index, loading/error |
 | `savedRoutesStore` | Persisted saved routes (name, stops, activity) |
 | `streetViewPlaybackStore` | Playback points, current index, heading, playing/paused, speed |
+| `mapSessionStore` | Browse-mode session: selected segment, Street View target (position + heading), per-segment coverage cache |
 | `userLocationStore` | Cached GPS location, request-location action |
 
 Stores are deliberately small and single-purpose. Cross-store coordination happens at the `App.tsx` level (e.g. `handleClearRoute` resets directions + map session + playback in one click).
@@ -114,7 +115,6 @@ Framework-agnostic helpers that don't fit "service" semantics.
 | `maps.ts` | Google Maps element factories (e.g. `PlaceAutocompleteElement`) |
 | `overpassQuery.ts` | Build Overpass QL queries for the active activity + bounds |
 | `platform.ts` | `isTauri`, `isMac` detection |
-| `segmentColor.ts` | Map coverage state → color |
 
 ### `constants/`
 
@@ -140,12 +140,14 @@ The Rust desktop shell:
 map bounds change
   └→ useOverpassPaths   (debounced)
        └→ services/overpass  → cycleways/footways for activity
-            └→ useStreetViewCoverage  (per-segment Street View probe)
-                 └→ <CoverageOverlay>  (color-coded polylines)
+            └→ <CoverageOverlay>  (theme-accented polylines, selection halo)
 
 user clicks a segment
-  └→ useMapSession  (selectedSegment, streetViewPosition, heading)
-       └→ <StreetViewPanel>
+  └→ useMapSession.handleSegmentClick
+       └→ mapSessionStore  (selectedSegment, streetViewPosition, heading)
+       └→ useStreetViewCoverage  (probes Street View, caches the result)
+            └→ mapSessionStore.upsertCheckedSegment
+       └→ <BrowseSidebar> + <StreetViewPanel>  read directly from the store
 
 user hits "Start movement"
   └→ services/geometry  (sample N points along the path)
