@@ -1,18 +1,39 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
 import type { PathSegment } from '@types';
-import { getSegmentColor } from '@utils/segmentColor';
+import { useActivityStore } from '@store/activityStore';
+import { useMapSessionStore } from '@store/mapSessionStore';
+import { ACTIVITY } from '@constants';
 
 interface CoverageOverlayProps {
   segments: PathSegment[];
   onSegmentClick?: (segment: PathSegment, latLng: google.maps.LatLng) => void;
 }
 
-export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOverlayProps) {
+// Theme-aware accent so map paths align with the active activity.
+const ACTIVITY_ACCENT: Record<string, string> = {
+  [ACTIVITY.CYCLING]: '#e94560',
+  [ACTIVITY.RUNNING]: '#28a55a',
+};
+
+export default function CoverageOverlay({
+  segments,
+  onSegmentClick,
+}: CoverageOverlayProps) {
   const map = useMap();
+  const activity = useActivityStore((s) => s.activity);
+  const selectedSegmentId = useMapSessionStore((s) => s.selectedSegment?.id ?? null);
+  const accent = ACTIVITY_ACCENT[activity] ?? '#e94560';
   const polylinesRef = useRef<Map<number, google.maps.Polyline>>(new Map());
   const halosRef = useRef<Map<number, google.maps.Polyline>>(new Map());
   const listenersRef = useRef<Map<number, google.maps.MapsEventListener>>(new Map());
+
+  // Hold the latest click handler so the polyline listeners (created once
+  // per segment) always invoke the current callback closure.
+  const onSegmentClickRef = useRef(onSegmentClick);
+  useEffect(() => {
+    onSegmentClickRef.current = onSegmentClick;
+  }, [onSegmentClick]);
 
   useEffect(() => {
     if (!map) return;
@@ -41,40 +62,55 @@ export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOv
     // Add or update polylines
     for (const segment of segments) {
       const path = segment.points.map(p => ({ lat: p.lat, lng: p.lng }));
-      const color = getSegmentColor(segment);
+      // Always use the activity theme accent so map paths read as cycling/running
+      // regardless of coverage state. Coverage info is conveyed in the sidebar.
+      const color = accent;
+      const isSelected = segment.id === selectedSegmentId;
+      const polyOpacity = segment.coverageChecked ? 0.95 : 0.75;
+      const polyWeight = isSelected ? 6 : 4;
+      const haloOpacity = isSelected ? 0.85 : 0.5;
+      const haloWeight = isSelected ? 11 : 7;
       const existing = existingIds.get(segment.id);
+      const existingHalo = halosRef.current.get(segment.id);
 
       if (existing) {
         existing.setOptions({
           strokeColor: color,
-          strokeOpacity: segment.coverageChecked ? 0.9 : 0.7,
+          strokeOpacity: polyOpacity,
+          strokeWeight: polyWeight,
+          zIndex: isSelected ? 12 : 10,
+        });
+        existingHalo?.setOptions({
+          strokeOpacity: haloOpacity,
+          strokeWeight: haloWeight,
+          zIndex: isSelected ? 11 : 9,
         });
       } else {
-        // Wide translucent blue halo for visibility
+        // Dark outline halo gives definition on both map and satellite tiles.
         const halo = new google.maps.Polyline({
           path,
-          strokeColor: '#42a5f5',
-          strokeOpacity: 0.45,
-          strokeWeight: 10,
+          strokeColor: '#000000',
+          strokeOpacity: haloOpacity,
+          strokeWeight: haloWeight,
           map,
           clickable: false,
-          zIndex: 9,
+          zIndex: isSelected ? 11 : 9,
         });
         halosRef.current.set(segment.id, halo);
 
         const polyline = new google.maps.Polyline({
           path,
           strokeColor: color,
-          strokeOpacity: segment.coverageChecked ? 0.9 : 0.7,
-          strokeWeight: 5,
+          strokeOpacity: polyOpacity,
+          strokeWeight: polyWeight,
           map,
           clickable: true,
-          zIndex: 10,
+          zIndex: isSelected ? 12 : 10,
         });
 
         const listener = polyline.addListener('click', (e: google.maps.PolyMouseEvent) => {
-          if (e.latLng && onSegmentClick) {
-            onSegmentClick(segment, e.latLng);
+          if (e.latLng) {
+            onSegmentClickRef.current?.(segment, e.latLng);
           }
         });
 
@@ -82,7 +118,7 @@ export default function CoverageOverlay({ segments, onSegmentClick }: CoverageOv
         listenersRef.current.set(segment.id, listener);
       }
     }
-  }, [map, segments, onSegmentClick]);
+  }, [map, segments, accent, selectedSegmentId]);
 
   // Cleanup on unmount
   useEffect(() => {

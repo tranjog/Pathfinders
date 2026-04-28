@@ -1,4 +1,5 @@
-import type { PathSegment, LatLng, ActivityConfig } from '@types';
+import type { LatLng, ActivityConfig } from '@types';
+import { useMapSessionStore } from '@store/mapSessionStore';
 import styles from './BrowseSidebar.module.css';
 
 interface BrowseSidebarProps {
@@ -6,7 +7,6 @@ interface BrowseSidebarProps {
   error: string | null;
   tooZoomedOut: boolean;
   segmentCount: number;
-  selectedSegment?: PathSegment | null;
   checking?: boolean;
   coverageProgress?: number;
   onStartMovement?: (points: LatLng[]) => void;
@@ -18,12 +18,13 @@ export default function BrowseSidebar({
   error,
   tooZoomedOut,
   segmentCount,
-  selectedSegment,
   checking,
   coverageProgress = 0,
   onStartMovement,
   config,
 }: BrowseSidebarProps) {
+  const selectedSegment = useMapSessionStore((s) => s.selectedSegment);
+
   if (tooZoomedOut) {
     return (
       <div className="panel-message">

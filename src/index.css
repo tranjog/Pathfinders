@@ -36,6 +36,14 @@ body {
   overflow: hidden;
   height: 100vh;
   background: var(--bg);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 #root {

@@ -1,23 +1,44 @@
-import { useCallback, useState } from 'react';
-import type { PathSegment, LatLng } from '@types';
+import { useCallback, useMemo } from 'react';
+import type { PathSegment } from '@types';
 import { computeHeading } from '@services/geometry';
+import { useMapSessionStore } from '@store/mapSessionStore';
 
 type CheckCoverage = (segment: PathSegment) => Promise<{ segment: PathSegment }>;
 
+/**
+ * Orchestrates browse-mode interactions: merges raw Overpass paths with the
+ * locally-cached coverage results, exposes a click handler that toggles
+ * selection / kicks off coverage checks, and a reset for activity changes.
+ *
+ * Selection, street-view target, and coverage cache live in `mapSessionStore`,
+ * so consumer components (sidebar, overlays, panels) read directly from the
+ * store rather than receiving them as props.
+ */
 export function useMapSession(rawSegments: PathSegment[], checkSegmentCoverage: CheckCoverage) {
-  const [selectedSegment, setSelectedSegment] = useState<PathSegment | null>(null);
-  const [streetViewPosition, setStreetViewPosition] = useState<LatLng | null>(null);
-  const [streetViewHeading, setStreetViewHeading] = useState(0);
-  const [checkedSegments, setCheckedSegments] = useState<Map<number, PathSegment>>(new Map());
+  const checkedSegments = useMapSessionStore((s) => s.checkedSegments);
+  const setSelectedSegment = useMapSessionStore((s) => s.setSelectedSegment);
+  const setStreetView = useMapSessionStore((s) => s.setStreetView);
+  const upsertCheckedSegment = useMapSessionStore((s) => s.upsertCheckedSegment);
+  const resetStore = useMapSessionStore((s) => s.reset);
 
-  const segments = rawSegments.map(s => checkedSegments.get(s.id) ?? s);
+  const segments = useMemo(
+    () => rawSegments.map((s) => checkedSegments[s.id] ?? s),
+    [rawSegments, checkedSegments]
+  );
 
   const handleSegmentClick = useCallback(
     async (segment: PathSegment, latLng: google.maps.LatLng) => {
-      const position = { lat: latLng.lat(), lng: latLng.lng() };
-      setStreetViewPosition(position);
-      setSelectedSegment(segment);
+      const { selectedSegment } = useMapSessionStore.getState();
 
+      // Toggle off if clicking the already-selected segment.
+      if (selectedSegment && selectedSegment.id === segment.id) {
+        setSelectedSegment(null);
+        setStreetView(null, 0);
+        return;
+      }
+
+      const position = { lat: latLng.lat(), lng: latLng.lng() };
+      let heading = 0;
       const pts = segment.points;
       if (pts.length >= 2) {
         let minDist = Infinity;
@@ -28,36 +49,24 @@ export function useMapSession(rawSegments: PathSegment[], checkSegmentCoverage: 
         }
         const nextIdx = Math.min(idx + 1, pts.length - 1);
         if (idx !== nextIdx) {
-          setStreetViewHeading(computeHeading(pts[idx], pts[nextIdx]));
+          heading = computeHeading(pts[idx], pts[nextIdx]);
         }
       }
 
+      setSelectedSegment(segment);
+      setStreetView(position, heading);
+
       if (!segment.coverageChecked) {
         const result = await checkSegmentCoverage(segment);
-        setCheckedSegments(prev => {
-          const updated = new Map(prev);
-          updated.set(segment.id, result.segment);
-          return updated;
-        });
-        setSelectedSegment(result.segment);
+        upsertCheckedSegment(result.segment);
       }
     },
-    [checkSegmentCoverage]
+    [checkSegmentCoverage, setSelectedSegment, setStreetView, upsertCheckedSegment]
   );
-
-  const reset = useCallback(() => {
-    setSelectedSegment(null);
-    setStreetViewPosition(null);
-    setStreetViewHeading(0);
-    setCheckedSegments(new Map());
-  }, []);
 
   return {
     segments,
-    selectedSegment,
-    streetViewPosition,
-    streetViewHeading,
     handleSegmentClick,
-    reset,
+    reset: resetStore,
   };
 }

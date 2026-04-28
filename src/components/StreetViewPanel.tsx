@@ -1,17 +1,28 @@
 import { useEffect, useRef } from 'react';
-import type { LatLng } from '@types';
+import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
+import { useMapSessionStore } from '@store/mapSessionStore';
 import styles from './StreetViewPanel.module.css';
 
 interface StreetViewPanelProps {
-  position: LatLng | null;
-  heading?: number;
   pitch?: number;
 }
 
-export default function StreetViewPanel({ position, heading = 0, pitch = 0 }: StreetViewPanelProps) {
+export default function StreetViewPanel({ pitch = 0 }: StreetViewPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
   const panoramaContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Compose effective Street View target: playback movement takes precedence
+  // over the static segment-click position from the map session.
+  const moverPoints = useStreetViewPlaybackStore((s) => s.points);
+  const moverIndex = useStreetViewPlaybackStore((s) => s.currentIndex);
+  const moverHeading = useStreetViewPlaybackStore((s) => s.heading);
+  const sessionPosition = useMapSessionStore((s) => s.streetViewPosition);
+  const sessionHeading = useMapSessionStore((s) => s.streetViewHeading);
+
+  const isMoving = moverPoints.length > 0;
+  const position = isMoving ? moverPoints[moverIndex] : sessionPosition;
+  const heading = isMoving ? moverHeading : sessionHeading;
 
   useEffect(() => {
     if (!containerRef.current || !position) return;
