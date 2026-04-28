@@ -57,8 +57,6 @@ Switch to Route mode, drop in up to 10 stops (type, click on map, or "use my loc
 
 ![Saved routes panel](docs/screenshots/saved-routes.jpg)
 
-> 📸 _**Screenshot needed:** the Saved Routes panel expanded with 2–4 saved routes visible in the list (each showing the name, activity icon, and stop count). Bonus: include the rename/delete affordances if visible. Capture from the route planner side panel._
-
 Save any route by name. Reloading replays the original stops through the Directions API so the route stays current with up-to-date roads. Stored locally per-install — nothing leaves your machine.
 
 ### 🚴↔🏃 Activity switcher — one app, two themes

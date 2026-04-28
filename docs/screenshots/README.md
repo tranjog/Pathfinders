@@ -11,7 +11,7 @@ Drop the following files in this directory. The main `README.md` references them
 | `street-view-ride.jpg` | ✅ present | Mid-playback: cyclist marker on the map (left), matching Street View panel (right), playback controls visible (skip-back / play / skip-forward, progress bar, frame counter, speed selector). |
 | `route-mode.jpg` | ✅ present | Route Planner expanded with ≥2 stops; map showing the resolved route polyline with A/B markers. Route alternatives visible if possible. |
 | `api-key-dialog.jpg` | ✅ present | The BYOK dialog on a fresh launch — title, input, save button. |
-| `saved-routes.jpg` | ⏳ needed | Saved Routes panel expanded with 2–4 saved routes listed (name + activity icon + stop count). Bonus: rename/delete affordances visible. |
+| `saved-routes.jpg` | ✅ present | Saved Routes panel expanded with 2–4 saved routes listed (name + activity icon + stop count). Bonus: rename/delete affordances visible. |
 | `activity-toggle.jpg` | ⏳ needed | Either a side-by-side composite (cycling vs running themed) of the same area, or a focused shot of the activity toggle in the header. Side-by-side is more impactful. |
 | `location-search.jpg` | ✅ present | Header location-search input with the Google Places autocomplete dropdown open (3–5 suggestions). "Use my location" icon visible next to it. |
 
