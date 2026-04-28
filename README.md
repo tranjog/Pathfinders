@@ -73,8 +73,6 @@ Toggle between cycling and running. Each activity loads its own Overpass query (
 
 ![Location search](docs/screenshots/location-search.jpg)
 
-> 📸 _**Screenshot needed:** the header location-search input with the Google Places autocomplete dropdown open showing 3–5 suggestions for a partial query (e.g. "san fra"). Make sure the "Use my location" icon is also visible next to the input._
-
 Google Places autocomplete in the header — type any city, address, or POI and the map flies there. The "Use my location" icon next to it triggers a native GPS prompt (Tauri plugin on desktop, browser geolocation on web).
 
 ---

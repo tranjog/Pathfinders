@@ -13,7 +13,7 @@ Drop the following files in this directory. The main `README.md` references them
 | `api-key-dialog.jpg` | ✅ present | The BYOK dialog on a fresh launch — title, input, save button. |
 | `saved-routes.jpg` | ⏳ needed | Saved Routes panel expanded with 2–4 saved routes listed (name + activity icon + stop count). Bonus: rename/delete affordances visible. |
 | `activity-toggle.jpg` | ⏳ needed | Either a side-by-side composite (cycling vs running themed) of the same area, or a focused shot of the activity toggle in the header. Side-by-side is more impactful. |
-| `location-search.jpg` | ⏳ needed | Header location-search input with the Google Places autocomplete dropdown open (3–5 suggestions). "Use my location" icon visible next to it. |
+| `location-search.jpg` | ✅ present | Header location-search input with the Google Places autocomplete dropdown open (3–5 suggestions). "Use my location" icon visible next to it. |
 
 ## Tips
 
