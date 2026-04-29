@@ -25,6 +25,7 @@ Built with **Tauri + React + TypeScript**. Runs as a native desktop app on macOS
 | 📍 **Route mode** | Multi-stop Google Maps cycling/walking directions (up to 10 stops) with route alternatives |
 | 💾 **Saved routes** | Name and revisit any planned trip; rename / delete / one-click reload |
 | ⤓ **GPX export** | Export the active route or any saved route to a `.gpx` file (track or route variant), with optional waypoints and synthetic timestamps. Garmin Connect / Strava integrations on the roadmap. |
+| ⤒ **Import** | Pick or drag-and-drop a `.gpx`, `.kml`, or `.geojson` file — Pathfinders parses, validates, and previews it (sparkline, distance, duration) before saving as a route under the current activity and rendering it on the map. Duplicate guard prevents accidental re-saves. |
 | 🖱️ **Map-click picking** | Click anywhere to set a stop; reverse-geocoded address fills the input automatically |
 | 🔍 **Location search** | Google Places autocomplete in the header — jump to any city, address, or POI |
 | 📡 **Use my location** | Native OS GPS prompt in the desktop app, browser geolocation in the web build |
@@ -74,6 +75,18 @@ Click **Export** in the active-route panel, or the ⤓ icon next to any saved ro
 - **Copy to clipboard** — for when you'd rather paste the XML somewhere directly.
 
 KML export and direct push to **Strava** and **Garmin Connect** courses are on the roadmap (the format picker already shows them as "Soon" tiles).
+
+### ⤒ Import — bring routes from anywhere
+
+![Import route dialog](docs/screenshots/import-route.jpg)
+
+Three ways to start an import — the **Import** pill in the Saved Routes header, the inline _import a file_ link in the empty state, or just **drag-and-drop** a file onto the panel. Pathfinders parses it, validates the data, and shows a preview with a sparkline of the track, distance, duration (when timestamps are present), and any non-blocking warnings — joined multi-segment tracks, synthesised stops from the polyline endpoints, very large bounding boxes. Confirm and the route is saved under your currently selected activity (cycling or running) and immediately drawn on the map, ready to play through Street View.
+
+- **GPX 1.1** — `<trk>`/`<trkseg>`/`<trkpt>` first, falling back to `<rte>`/`<rtept>` when no tracks exist; reads `<wpt>` for stops and `<time>` for duration.
+- **KML** — `<LineString><coordinates>` for the path, `<Placemark><Point>` for waypoints.
+- **GeoJSON** — `LineString` and `MultiLineString` features for the path, `Point` features for waypoints.
+- **Validation** — rejects files over 10 MB, unknown extensions, empty tracks, and unparseable XML/JSON; auto-fixes NaN/out-of-range coordinates and downsamples tracks above 50 000 points.
+- **Duplicate guard** — the Save button is greyed out when the same route is already saved under the current activity, so reload + import flows can't accidentally pile up duplicates.
 
 ### 🔍 Location search — jump anywhere
 

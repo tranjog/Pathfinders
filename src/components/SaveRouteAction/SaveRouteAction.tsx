@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { RouteData, Stop } from '@types';
 import type { ActivityType } from '@constants/activity';
 import { useSavedRoutesStore } from '@store/savedRoutesStore';
+import { isSamePolyline } from '@utils/route';
 import styles from '../SavedRoutes/SavedRoutes.module.css';
 
 interface SaveRouteActionProps {
@@ -12,11 +13,21 @@ interface SaveRouteActionProps {
 
 export default function SaveRouteAction({ route, stops, activity }: SaveRouteActionProps) {
   const save = useSavedRoutesStore((s) => s.save);
+  const routes = useSavedRoutesStore((s) => s.routes);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
 
   const filledStops = stops.filter((s) => s.latLng !== null);
-  const canSave = filledStops.length >= 2;
+  const hasStops = filledStops.length >= 2;
+  const alreadySaved = routes.some(
+    (r) => r.activity === activity && isSamePolyline(r.route.polyline, route.polyline),
+  );
+  const canSave = hasStops && !alreadySaved;
+  const disabledReason = !hasStops
+    ? 'Set at least 2 stops to save'
+    : alreadySaved
+      ? 'This route is already saved for this activity'
+      : 'Save this route';
 
   const handleOpen = () => {
     if (!canSave) return;
@@ -48,9 +59,9 @@ export default function SaveRouteAction({ route, stops, activity }: SaveRouteAct
         className={styles.btnSave}
         onClick={handleOpen}
         disabled={!canSave}
-        title={canSave ? 'Save this route' : 'Set at least 2 stops to save'}
+        title={disabledReason}
       >
-        Save
+        {alreadySaved ? 'Saved' : 'Save'}
       </button>
     );
   }
