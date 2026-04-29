@@ -85,6 +85,7 @@ UI building blocks. Each one lives in its own folder and is styled via CSS Modul
 | `RouteAlternatives` | Renders the list of fetched route alternatives, "go" button, save/export actions |
 | `SavedRoutes` / `SaveRouteAction` | Persisted-route list + save button |
 | `ExportRouteAction` / `ExportRouteDialog` | Export-trigger button + format/options dialog (GPX today; KML/Strava/Garmin tiles for future) |
+| `ImportRouteDialog` | Preview/confirm dialog for a parsed `.gpx` / `.kml` / `.geojson` file (sparkline, name, stats, warnings); ships its sub-component `ImportErrorDialog` for the rejection path |
 | `MovementControls` | Skip / play / pause / speed for Street View playback |
 | `LocationSearch` | Header search box (Places autocomplete) + "use my location" button |
 | `ActivityToggle` / `ModeToggle` | Cycling↔running and Browse↔Route switches |
@@ -102,6 +103,7 @@ React hooks that combine services + stores into reusable behaviours.
 | `useMapSession.ts` | Browse-mode orchestration: merges raw paths with the cached coverage results in `mapSessionStore`, exposes the segment-click handler that toggles selection / triggers coverage checks |
 | `useWindowWidth.ts` | Tracks `window.innerWidth` and re-renders on resize |
 | `useResizableLayout.ts` | Drag-to-resize between the map pane and the side panel (side-by-side or stacked) |
+| `useRouteImport.tsx` | File-picker + drag-and-drop plumbing for route imports; owns preview/error dialog state, exposes `openPicker`, drag handlers, and the dialog overlays for the consumer to render |
 
 ### `store/`
 
@@ -134,6 +136,7 @@ Side-effecting helpers — wrap an API, the DOM, or storage. Still no React, but
 | `mapBounds.ts` | `boundsForPath` over Google's `LatLngBounds` |
 | `overpass.ts` | Overpass API HTTP calls |
 | `places.ts` | Google `PlaceAutocompleteElement` factory + DOM helpers for its closed shadow DOM |
+| `routeImport.ts` | Parses uploaded `.gpx` / `.kml` / `.geojson` files into a preview-ready `SavedRoute` shape (validation, warnings, downsampling) |
 | `savedRoutes.ts` | localStorage persistence (with runtime validation) for saved routes |
 | `streetview.ts` | Street View metadata lookup + coverage probing |
 
@@ -214,6 +217,14 @@ user reloads a saved route
        └→ resets activity if needed
        └→ restores stops
        └→ replays Directions API call so the route stays current
+
+user imports a .gpx / .kml / .geojson
+  └→ <SavedRoutes> (header button / empty-state link / drag-and-drop)
+       └→ useRouteImport  → services/routeImport.parseRouteFile
+            └→ <ImportRouteDialog>  (sparkline preview, name field, warnings)
+                 └→ AppContent.handleImportRoute  (passed in as `onImport`)
+                      └→ savedRoutesStore.save  (persists under current activity)
+                      └→ directionsStore.setSavedRoute  (renders polyline)
 ```
 
 ### BYOK key resolution

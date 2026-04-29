@@ -21,12 +21,14 @@ import { useStreetViewPlaybackStore } from '@store/streetViewPlaybackStore';
 import { useDirectionsStore } from '@store/directionsStore';
 import { useActivityStore } from '@store/activityStore';
 import { useRoutePlannerStore } from '@store/routePlannerStore';
+import { useSavedRoutesStore } from '@store/savedRoutesStore';
 import { samplePointsAlongPath } from '@services/geometry';
+import type { ImportedRoute } from '@services/routeImport';
 import { SV_SAMPLE_INTERVAL_METERS } from '@constants/tuning';
 import { APP_MODE, type AppMode } from '@constants/appMode';
 import type { ActivityType } from '@constants/activity';
 import { ACTIVITY_CONFIGS } from '@constants/activityConfig';
-import type { LatLng, PathSegment, SavedRoute } from '@types';
+import type { LatLng, PathSegment, SavedRoute, SavedRouteData, Stop } from '@types';
 import styles from './AppContent.module.css';
 
 interface AppContentProps {
@@ -42,6 +44,7 @@ export default function AppContent({ keySource, onOpenSettings }: AppContentProp
   const [savedOpen, setSavedOpen] = useState(true);
   const setStops = useRoutePlannerStore((s) => s.setStops);
   const clearStops = useRoutePlannerStore((s) => s.clear);
+  const saveRoute = useSavedRoutesStore((s) => s.save);
 
   const config = ACTIVITY_CONFIGS[activity];
 
@@ -117,18 +120,40 @@ export default function AppContent({ keySource, onOpenSettings }: AppContentProp
     resetPlayback([], false);
   }, [searchTarget, clearStops, clearRoute, resetMapSession, resetPlayback]);
 
+  // Shared "display a complete route on the map" sequence. Used by both
+  // saved-route reload and file import — they only differ in what comes
+  // before (activity switch / persistence) and after (which panels open).
+  // Note: doesn't touch mapSession; callers decide whether the Browse-mode
+  // segment cache should be invalidated (e.g. only when the activity changes).
+  const renderRoute = useCallback(
+    (newStops: Stop[], route: SavedRouteData) => {
+      resetPlayback([], false);
+      setStops(newStops);
+      setSavedRoute(route);
+      setPlannerOpen(false);
+    },
+    [resetPlayback, setStops, setSavedRoute]
+  );
+
   const handleLoadSavedRoute = useCallback(
     (saved: SavedRoute) => {
       if (saved.activity !== activity) {
         setActivity(saved.activity);
         resetMapSession();
       }
-      resetPlayback([], false);
-      setStops(saved.stops);
-      setSavedRoute(saved.route);
-      setPlannerOpen(false);
+      renderRoute(saved.stops, saved.route);
     },
-    [activity, setActivity, resetMapSession, resetPlayback, setStops, setSavedRoute]
+    [activity, setActivity, resetMapSession, renderRoute]
+  );
+
+  const handleImportRoute = useCallback(
+    (preview: ImportedRoute, name: string) => {
+      // Persist under the current activity, then render exactly like a saved route.
+      saveRoute(name, activity, preview.stops, preview.route);
+      renderRoute(preview.stops, preview.route);
+      setSavedOpen(true);
+    },
+    [saveRoute, activity, renderRoute]
   );
 
   return (
@@ -196,6 +221,7 @@ export default function AppContent({ keySource, onOpenSettings }: AppContentProp
                 open={savedOpen}
                 onToggle={() => setSavedOpen((v) => !v)}
                 onLoad={handleLoadSavedRoute}
+                onImport={handleImportRoute}
               />
               {routeError && (
                 <div className="panel-message" style={{ color: 'var(--red)' }}>

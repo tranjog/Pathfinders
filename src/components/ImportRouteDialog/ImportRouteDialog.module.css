@@ -1,0 +1,153 @@
+.dialog {
+  max-width: 500px;
+}
+
+.summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.summary strong {
+  color: var(--text);
+}
+
+.previewCanvas {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  height: 110px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  color: var(--accent);
+}
+
+.previewCanvas svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sparkStart {
+  fill: var(--green);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+.sparkEnd {
+  fill: var(--red);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.fieldInput {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.fieldInput:focus {
+  border-color: var(--accent);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.statLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.activityRow {
+  margin-bottom: 14px;
+}
+
+.activityPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(33, 150, 243, 0.10);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+[data-activity='running'] .activityPill {
+  background: rgba(40, 165, 90, 0.10);
+}
+
+.activityPill svg {
+  display: block;
+}
+
+.warningList {
+  background: rgba(255, 167, 38, 0.08);
+  border: 1px solid rgba(255, 167, 38, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.warningList strong {
+  color: rgba(255, 183, 77, 1);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.warningList ul {
+  margin: 6px 0 0 18px;
+  padding: 0;
+  color: var(--text-muted);
+}
+
+.warningList li {
+  margin-top: 2px;
+}
