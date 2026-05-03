@@ -1,6 +1,34 @@
+import { invoke } from '@tauri-apps/api/core';
+import { isTauri } from '@utils/platform';
 import type { PathSegment, LatLng } from '@types';
 
 const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
+
+// overpass-api.de's tightened rate-limiting rules reject requests from the
+// WKWebView (no/empty User-Agent and a `tauri://localhost` Origin) with 406.
+// Route through the Rust `fetch_overpass` command whenever we are inside
+// Tauri so we can send a proper User-Agent; only fall back to browser fetch
+// in a plain web browser. `__TAURI__` is not exposed on `window` in Tauri 2
+// by default, so detect via `__TAURI_INTERNALS__` (see @utils/platform).
+const USE_RUST_FETCH = isTauri;
+
+async function fetchOverpassRaw(query: string): Promise<string> {
+  if (USE_RUST_FETCH) {
+    try {
+      return await invoke<string>('fetch_overpass', { query });
+    } catch (err) {
+      const msg = typeof err === 'string' ? err : (err instanceof Error ? err.message : String(err));
+      throw new Error(`[rust] ${msg}`);
+    }
+  }
+  const response = await fetch(OVERPASS_API, {
+    method: 'POST',
+    body: `data=${encodeURIComponent(query)}`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  });
+  if (!response.ok) throw new Error(`[fetch] ${response.status}`);
+  return response.text();
+}
 
 interface OverpassNode {
   type: 'node';
@@ -49,17 +77,14 @@ export async function fetchPaths(
   const bbox = `${south},${west},${north},${east}`;
   const query = queryBuilder(bbox);
 
-  const response = await fetch(OVERPASS_API, {
-    method: 'POST',
-    body: `data=${encodeURIComponent(query)}`,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  });
+  const text = await fetchOverpassRaw(query);
 
-  if (!response.ok) {
-    throw new Error(`Overpass API error: ${response.status}`);
+  let data: OverpassResponse;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('Invalid response from Overpass API');
   }
-
-  const data: OverpassResponse = await response.json();
 
   // Build node lookup
   const nodes = new Map<number, LatLng>();
