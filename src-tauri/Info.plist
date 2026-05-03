@@ -6,5 +6,20 @@
     <string>Pathfinders use your location to center the map nearby.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Pathfinders use your location to center the map nearby.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>overpass-api.de</key>
+            <dict>
+                <key>NSExceptionMinimumTLSVersion</key>
+                <string>TLSv1.0</string>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
 </dict>
 </plist>
